@@ -29,14 +29,14 @@ const truncateText = (text: string, max = 40) =>
 <template>
   <div v-if="history.length > 0" class="space-y-3">
     <div class="flex items-center justify-between">
-      <div class="flex items-center gap-2 text-sm font-medium text-foreground">
+      <div class="text-foreground flex items-center gap-2 text-sm font-medium">
         <Clock class="h-4 w-4" />
         {{ $t('qr.history.title') }}
       </div>
       <Button
         variant="ghost"
         size="sm"
-        class="h-7 gap-1 px-2 text-xs text-muted-foreground hover:text-destructive"
+        class="text-muted-foreground hover:text-destructive h-7 gap-1 px-2 text-xs"
         @click="clearHistory"
       >
         <Trash2 class="h-3.5 w-3.5" />
@@ -44,7 +44,7 @@ const truncateText = (text: string, max = 40) =>
       </Button>
     </div>
 
-    <div class="grid gap-2">
+    <div class="grid max-h-72 gap-2 overflow-y-auto pr-1">
       <div
         v-for="item in history"
         :key="item.id"
@@ -59,10 +59,10 @@ const truncateText = (text: string, max = 40) =>
 
         <!-- Info -->
         <div class="min-w-0 flex-1">
-          <p class="truncate text-sm font-medium text-foreground">
+          <p class="text-foreground truncate text-sm font-medium">
             {{ truncateText(item.text) }}
           </p>
-          <p class="mt-0.5 text-xs text-muted-foreground">
+          <p class="text-muted-foreground mt-0.5 text-xs">
             {{ formatDate(item.createdAt) }}
           </p>
         </div>
@@ -72,7 +72,7 @@ const truncateText = (text: string, max = 40) =>
           <Button
             variant="ghost"
             size="icon"
-            class="h-7 w-7 text-muted-foreground hover:text-foreground"
+            class="text-muted-foreground hover:text-foreground h-7 w-7"
             :title="$t('qr.history.restore')"
             @click="emit('restore', item)"
           >
@@ -81,7 +81,7 @@ const truncateText = (text: string, max = 40) =>
           <Button
             variant="ghost"
             size="icon"
-            class="h-7 w-7 text-muted-foreground hover:text-destructive"
+            class="text-muted-foreground hover:text-destructive h-7 w-7"
             :title="$t('qr.history.remove')"
             @click="removeFromHistory(item.id)"
           >
