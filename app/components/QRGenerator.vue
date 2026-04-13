@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RotateCcw } from 'lucide-vue-next'
 import { useQRCode } from '~/composables/useQRCode'
+import { useQRHistory, type QRHistoryItem } from '~/composables/useQRHistory'
 
 const {
   text,
@@ -12,15 +13,24 @@ const {
   reset
 } = useQRCode()
 
+const { addToHistory } = useQRHistory()
+
 const showOptions = ref(false)
 
 const handleDownload = async () => {
   const filename = `qr-code-${Date.now()}.png`
   await downloadQR(filename)
+  if (qrDataUrl.value) addToHistory(text.value, qrDataUrl.value, options.value)
 }
 
 const handleCopy = async () => {
   await copyToClipboard()
+  if (qrDataUrl.value) addToHistory(text.value, qrDataUrl.value, options.value)
+}
+
+const handleRestore = (item: QRHistoryItem) => {
+  text.value = item.text
+  options.value = { ...item.options }
 }
 </script>
 
@@ -74,6 +84,9 @@ const handleCopy = async () => {
         <RotateCcw class="h-4 w-4" />
         {{ $t('qr.reset') }}
       </Button>
+
+      <!-- History -->
+      <QRHistory @restore="handleRestore" />
     </FieldGroup>
   </div>
 </template>

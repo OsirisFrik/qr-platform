@@ -25,5 +25,15 @@
     "removeLogo": "Remove",
     "logoHint": "Image will be placed at center. Error correction is set to High automatically."
   },
-  "reset": "Reset"
+  "reset": "Reset",
+  "history": {
+    "title": "Recent QR Codes",
+    "clearAll": "Clear all",
+    "restore": "Restore",
+    "remove": "Remove",
+    "justNow": "Just now",
+    "minutesAgo": "{n} min ago",
+    "hoursAgo": "{n}h ago",
+    "daysAgo": "{n}d ago"
+  }
 }

@@ -25,5 +25,15 @@
     "removeLogo": "Eliminar",
     "logoHint": "La imagen se colocará en el centro. La corrección de errores se establece en Alta automáticamente."
   },
-  "reset": "Reiniciar"
+  "reset": "Reiniciar",
+  "history": {
+    "title": "Códigos QR recientes",
+    "clearAll": "Borrar todo",
+    "restore": "Restaurar",
+    "remove": "Eliminar",
+    "justNow": "Ahora mismo",
+    "minutesAgo": "Hace {n} min",
+    "hoursAgo": "Hace {n}h",
+    "daysAgo": "Hace {n}d"
+  }
 }
