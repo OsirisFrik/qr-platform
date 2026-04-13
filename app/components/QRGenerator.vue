@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { RotateCcw } from 'lucide-vue-next'
+import { RotateCcw, Type, Wifi } from 'lucide-vue-next'
 import { useQRCode } from '~/composables/useQRCode'
 import { useQRHistory, type QRHistoryItem } from '~/composables/useQRHistory'
 
@@ -16,22 +16,45 @@ const {
 const { addToHistory } = useQRHistory()
 
 const showOptions = ref(false)
+const mode = ref<'text' | 'wifi'>('text')
+const wifiText = ref('')
+
+const activeText = computed(() => mode.value === 'wifi' ? wifiText.value : text.value)
+
+watch(mode, () => {
+  reset()
+  wifiText.value = ''
+  showOptions.value = false
+})
+
+watch(wifiText, (val) => {
+  if (mode.value === 'wifi') text.value = val
+})
 
 const handleDownload = async () => {
   const filename = `qr-code-${Date.now()}.png`
   await downloadQR(filename)
-  if (qrDataUrl.value) addToHistory(text.value, qrDataUrl.value, options.value)
+  if (qrDataUrl.value) addToHistory(activeText.value, qrDataUrl.value, options.value)
 }
 
 const handleCopy = async () => {
   await copyToClipboard()
-  if (qrDataUrl.value) addToHistory(text.value, qrDataUrl.value, options.value)
+  if (qrDataUrl.value) addToHistory(activeText.value, qrDataUrl.value, options.value)
 }
 
 const handleRestore = (item: QRHistoryItem) => {
-  text.value = item.text
+  if (item.text.startsWith('WIFI:')) {
+    mode.value = 'wifi'
+    wifiText.value = item.text
+    text.value = item.text
+  } else {
+    mode.value = 'text'
+    text.value = item.text
+  }
   options.value = { ...item.options }
 }
+
+const hasContent = computed(() => mode.value === 'wifi' ? !!wifiText.value : !!text.value)
 </script>
 
 <template>
@@ -48,7 +71,41 @@ const handleRestore = (item: QRHistoryItem) => {
 
     <!-- Main Content -->
     <FieldGroup class="gap-4">
-      <QRInput v-model="text" />
+
+      <!-- Mode Toggle -->
+      <ButtonGroup class="w-full">
+        <Button
+          :variant="mode === 'text' ? 'default' : 'outline'"
+          class="flex-1"
+          @click="mode = 'text'"
+        >
+          <Type class="h-4 w-4" />
+          {{ $t('qr.mode.text') }}
+        </Button>
+        <ButtonGroupSeparator />
+        <Button
+          :variant="mode === 'wifi' ? 'default' : 'outline'"
+          class="flex-1"
+          @click="mode = 'wifi'"
+        >
+          <Wifi class="h-4 w-4" />
+          {{ $t('qr.mode.wifi') }}
+        </Button>
+      </ButtonGroup>
+
+      <!-- Input by mode -->
+      <Transition
+        enter-active-class="transition duration-200"
+        enter-from-class="opacity-0 translate-y-1"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition duration-150"
+        leave-from-class="opacity-100 translate-y-0"
+        leave-to-class="opacity-0 translate-y-1"
+        mode="out-in"
+      >
+        <QRInput v-if="mode === 'text'" v-model="text" />
+        <QRWifiInput v-else v-model="wifiText" />
+      </Transition>
 
       <QRPreview
         :data-url="qrDataUrl"
@@ -57,8 +114,8 @@ const handleRestore = (item: QRHistoryItem) => {
         @copy="handleCopy"
       />
 
-      <!-- Options Toggle -->
-      <Button variant="outline" class="w-full" @click="showOptions = !showOptions">
+      <!-- Options Toggle (only for text mode) -->
+      <Button v-if="mode === 'text'" variant="outline" class="w-full" @click="showOptions = !showOptions">
         {{ showOptions ? $t('qr.options.hide') : $t('qr.options.show') }}
       </Button>
 
@@ -76,17 +133,19 @@ const handleRestore = (item: QRHistoryItem) => {
 
       <!-- Reset Button -->
       <Button
-        v-if="text || qrDataUrl"
+        v-if="hasContent || qrDataUrl"
         variant="destructive"
         class="self-start"
-        @click="reset"
+        @click="reset(); wifiText = ''"
       >
         <RotateCcw class="h-4 w-4" />
         {{ $t('qr.reset') }}
       </Button>
 
       <!-- History -->
-      <QRHistory @restore="handleRestore" />
+      <ClientOnly>
+        <QRHistory @restore="handleRestore" />
+      </ClientOnly>
     </FieldGroup>
   </div>
 </template>

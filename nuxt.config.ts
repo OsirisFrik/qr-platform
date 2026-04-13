@@ -15,7 +15,12 @@ export default defineNuxtConfig({
     }
   },
 
-  modules: ['shadcn-nuxt', '@nuxtjs/i18n'],
+  modules: [
+    'shadcn-nuxt',
+    '@nuxtjs/i18n',
+    '@vercel/speed-insights',
+    '@vercel/analytics'
+  ],
 
   // shad-cn configs
   shadcn: {

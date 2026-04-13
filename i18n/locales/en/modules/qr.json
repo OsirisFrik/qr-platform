@@ -25,6 +25,21 @@
     "removeLogo": "Remove",
     "logoHint": "Image will be placed at center. Error correction is set to High automatically."
   },
+  "mode": {
+    "text": "Text / URL",
+    "wifi": "WiFi"
+  },
+  "wifi": {
+    "ssid": "Network Name (SSID)",
+    "ssidPlaceholder": "Network Name (SSID)",
+    "security": "Security Type",
+    "password": "Password",
+    "passwordPlaceholder": "Enter Wi-Fi password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "hidden": "Hidden network",
+    "hiddenHint": "Enable if the network does not broadcast its SSID"
+  },
   "reset": "Reset",
   "history": {
     "title": "Recent QR Codes",

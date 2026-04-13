@@ -25,6 +25,21 @@
     "removeLogo": "Eliminar",
     "logoHint": "La imagen se colocará en el centro. La corrección de errores se establece en Alta automáticamente."
   },
+  "mode": {
+    "text": "Texto / URL",
+    "wifi": "WiFi"
+  },
+  "wifi": {
+    "ssid": "Nombre de red (SSID)",
+    "ssidPlaceholder": "Nombre de red (SSID)",
+    "security": "Tipo de seguridad",
+    "password": "Contraseña",
+    "passwordPlaceholder": "Ingresa la contraseña Wi-Fi",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña",
+    "hidden": "Red oculta",
+    "hiddenHint": "Activa si la red no transmite su SSID"
+  },
   "reset": "Reiniciar",
   "history": {
     "title": "Códigos QR recientes",

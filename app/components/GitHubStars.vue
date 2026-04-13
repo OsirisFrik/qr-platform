@@ -3,12 +3,15 @@ import { Github, Star } from 'lucide-vue-next'
 
 const REPO = 'OsirisFrik/qr-platform'
 
-const { data: stars } = await useFetch<number>(`https://api.github.com/repos/${REPO}`, {
-  key: 'github-stars',
-  transform: (res: any) => res.stargazers_count as number,
-  default: () => 0,
-  server: true,
-})
+const { data: stars } = await useFetch<number>(
+  `https://api.github.com/repos/${REPO}`,
+  {
+    key: 'github-stars',
+    transform: (res: any) => res.stargazers_count as number,
+    default: () => 0,
+    server: true
+  }
+)
 </script>
 
 <template>
