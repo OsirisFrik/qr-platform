@@ -1,0 +1,18 @@
+{
+  "unknownError": "Error desconocido",
+  "formErrorMessage": "Error en el formulario",
+  "createError": "Error al crear",
+  "createErrorAction": "Error al crear {action}",
+  "createSuccessAction": "{action} se creo correctamente",
+  "updateErrorAction": "Error al actualizar {action}",
+  "updateSuccessAction": "{action} se ha actualizado correctamente",
+  "uploadSuccessAction": "{action} se ha subido correctamente",
+  "uploadErrorAction": "Error al subir {action}",
+  "createSuccess": "Creado exitosamente",
+  "notFoundAction": "No se encontró {action}",
+  "loadErrorAction": "Error al cargar {action}",
+  "confirmDeleteTitle": "Se borrara el elemento, ¿deseas continuar?",
+  "confirmDeleteAction": "Se eliminara {action}, este cambio no se puede revertir, ¿deseas continuar?",
+  "deleteErrorAction": "Error al borrar {action}",
+  "deleteSuccessAction": "Se ha borrado correctamente {action}"
+}

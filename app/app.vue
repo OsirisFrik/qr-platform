@@ -1,6 +1,8 @@
+<script lang="ts" setup>
+import { useDark } from '@vueuse/core'
+
+useDark()
+</script>
 <template>
-  <div>
-    <NuxtRouteAnnouncer />
-    <NuxtWelcome />
-  </div>
+  <NuxtPage />
 </template>

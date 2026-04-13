@@ -1,0 +1,18 @@
+{
+  "unknownError": "Unknown error",
+  "confirmDeleteAction": "{action} will be removed, this change cannot be reversed, do you want to continue?",
+  "confirmDeleteTitle": "The item will be deleted, do you want to continue?",
+  "createError": "Error creating",
+  "createErrorAction": "Error creating {action}",
+  "createSuccess": "Successfully created",
+  "createSuccessAction": "{action} was created correctly",
+  "deleteErrorAction": "Error deleting {action}",
+  "deleteSuccessAction": "{action} has been successfully deleted",
+  "formErrorMessage": "Form error",
+  "loadErrorAction": "Error loading {action}",
+  "notFoundAction": "{action} not found",
+  "updateErrorAction": "Error updating {action}",
+  "updateSuccessAction": "{action} has been updated successfully",
+  "uploadErrorAction": "Error uploading {action}",
+  "uploadSuccessAction": "{action} has been uploaded successfully"
+}

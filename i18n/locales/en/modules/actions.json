@@ -1,0 +1,18 @@
+{
+  "create": "Create",
+  "delete": "Delete",
+  "deleteAction": "Delete {action}",
+  "cancel": "Cancel",
+  "change": "change",
+  "close": "Close",
+  "confirm": "Confirm",
+  "confirmAction": "Are you sure you want {action}?",
+  "save": "Keep",
+  "selectDate": "Select date",
+  "yes": "Yes",
+  "confirmDelete": "Are you sure you want to remove {action}?",
+  "edit": "Edit",
+  "no": "No",
+  "ok": "Ok",
+  "refresh": "Refresh"
+}
