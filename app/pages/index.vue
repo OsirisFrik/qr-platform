@@ -1,4 +1,7 @@
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import HomeView from '~/views/HomeView.vue'
+</script>
+
 <template>
-  <div>Hello world</div>
+  <HomeView />
 </template>

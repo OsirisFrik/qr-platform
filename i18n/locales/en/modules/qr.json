@@ -1,0 +1,25 @@
+{
+  "title": "QR Code Generator",
+  "subtitle": "Create and customize QR codes instantly",
+  "input": {
+    "label": "Enter Text or URL",
+    "hint": "Enter a URL, email, phone number, or any text to generate a QR code"
+  },
+  "preview": {
+    "empty": "Enter text or a URL above to generate your QR code",
+    "generating": "Generating QR code...",
+    "download": "Download",
+    "copy": "Copy to Clipboard",
+    "copied": "Copied!"
+  },
+  "options": {
+    "title": "Customization Options",
+    "show": "Show Options",
+    "hide": "Hide Options",
+    "size": "QR Code Size",
+    "darkColor": "Dark Color",
+    "lightColor": "Light Color",
+    "errorCorrection": "Error Correction Level"
+  },
+  "reset": "Reset"
+}

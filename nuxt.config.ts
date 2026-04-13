@@ -6,7 +6,13 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ['@/assets/css/tailwind.css'],
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    server: {
+      allowedHosts: [
+        'https://tigers-childhood-bridal-boss.trycloudflare.com/',
+        '8263-201-170-65-198.ngrok-free.app'
+      ]
+    }
   },
 
   modules: ['shadcn-nuxt', '@nuxtjs/supabase', '@nuxtjs/i18n'],

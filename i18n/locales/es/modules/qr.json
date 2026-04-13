@@ -1,0 +1,25 @@
+{
+  "title": "Generador de Códigos QR",
+  "subtitle": "Crea y personaliza códigos QR al instante",
+  "input": {
+    "label": "Ingresa Texto o URL",
+    "hint": "Ingresa una URL, correo electrónico, número de teléfono o cualquier texto para generar un código QR"
+  },
+  "preview": {
+    "empty": "Ingresa texto o una URL arriba para generar tu código QR",
+    "generating": "Generando código QR...",
+    "download": "Descargar",
+    "copy": "Copiar al Portapapeles",
+    "copied": "¡Copiado!"
+  },
+  "options": {
+    "title": "Opciones de Personalización",
+    "show": "Mostrar Opciones",
+    "hide": "Ocultar Opciones",
+    "size": "Tamaño del Código QR",
+    "darkColor": "Color Oscuro",
+    "lightColor": "Color Claro",
+    "errorCorrection": "Nivel de Corrección de Errores"
+  },
+  "reset": "Reiniciar"
+}
