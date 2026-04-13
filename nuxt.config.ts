@@ -15,7 +15,7 @@ export default defineNuxtConfig({
     }
   },
 
-  modules: ['shadcn-nuxt', '@nuxtjs/supabase', '@nuxtjs/i18n'],
+  modules: ['shadcn-nuxt', '@nuxtjs/i18n'],
 
   // shad-cn configs
   shadcn: {
@@ -34,15 +34,15 @@ export default defineNuxtConfig({
   },
 
   // supabase configs
-  supabase: {
-    redirect: true,
-    redirectOptions: {
-      login: '/login',
-      callback: '/login/confirm',
-      include: ['/dashboard'],
-      saveRedirectToCookie: true
-    }
-  },
+  // supabase: {
+  //   redirect: true,
+  //   redirectOptions: {
+  //     login: '/login',
+  //     callback: '/login/confirm',
+  //     include: ['/dashboard'],
+  //     saveRedirectToCookie: true
+  //   }
+  // },
 
   // i18n configs
   i18n: {
