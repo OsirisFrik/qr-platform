@@ -1,36 +1,28 @@
 <script setup lang="ts">
-interface Props {
+const props = withDefaults(defineProps<{
   modelValue: string
   placeholder?: string
   disabled?: boolean
-}
-
-interface Emits {
-  (e: 'update:modelValue', value: string): void
-}
-
-withDefaults(defineProps<Props>(), {
+}>(), {
   placeholder: 'Enter URL or text...',
-  disabled: false
+  disabled: false,
 })
 
-defineEmits<Emits>()
+const emits = defineEmits<{
+  (e: 'update:modelValue', value: string): void
+}>()
 </script>
 
 <template>
-  <div class="w-full space-y-2">
-    <label class="block text-sm font-medium text-foreground">
-      {{ $t('qr.input.label') }}
-    </label>
-    <textarea
-      :value="modelValue"
+  <Field>
+    <FieldLabel>{{ $t('qr.input.label') }}</FieldLabel>
+    <Textarea
+      :model-value="props.modelValue"
       :placeholder="placeholder"
       :disabled="disabled"
-      @input="$emit('update:modelValue', $event.target.value)"
-      class="min-h-24 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm placeholder-muted-foreground outline-none transition focus:border-primary focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
+      class="min-h-24 resize-none"
+      @update:model-value="emits('update:modelValue', String($event))"
     />
-    <p class="text-xs text-muted-foreground">
-      {{ $t('qr.input.hint') }}
-    </p>
-  </div>
+    <FieldDescription>{{ $t('qr.input.hint') }}</FieldDescription>
+  </Field>
 </template>

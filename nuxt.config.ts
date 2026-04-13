@@ -67,5 +67,15 @@ export default defineNuxtConfig({
     tsConfig: {
       include: ['types/**/*.d.ts']
     }
+  },
+  app: {
+    head: {
+      title: 'QR Code Generator',
+      link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+      viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
+      htmlAttrs: {
+        class: 'dark'
+      }
+    }
   }
 })

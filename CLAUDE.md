@@ -68,17 +68,20 @@ i18n/              # Translation files (en, es locales)
 ### Key Patterns
 
 #### Styling
+
 - Tailwind v4 with `@tailwindcss/vite` plugin
 - shadcn components auto-imported (no manual imports)
 - Use `pnpm shad add` to add new UI components
 - Icons from lucide-vue-next
 
 #### Internationalization
+
 - Locales: `en` (English), `es` (Español)
 - Translation files in `i18n/locales/{lang}/index.ts`
 - useI18n composable available in all components
 
 #### Component Library
+
 - shadcn-nuxt components auto-imported (no manual imports)
 - All UI components live in `app/components/ui/`
 - Add new components with: `pnpm shad add [component-name]`
@@ -86,17 +89,21 @@ i18n/              # Translation files (en, es locales)
 ## Common Tasks
 
 ### Creating a New Page
+
 1. Create file in `app/pages/` (e.g., `app/pages/about.vue`)
 2. Nuxt auto-routes it based on filename
 3. File-based routing handles navigation automatically
 
 ### Adding a shadcn Component
+
 ```bash
 pnpm shad add [component-name]
 ```
+
 Components are auto-imported; no manual setup needed.
 
 ### Adding Translations
+
 1. Add keys to `i18n/locales/en/index.ts` and `i18n/locales/es/index.ts`
 2. Use `useI18n()` in components to access translations
 
@@ -109,11 +116,20 @@ Components are auto-imported; no manual setup needed.
 ## Design Principles
 
 Keep the QR generator simple and fast:
+
 - Minimize form fields (input URL/text + optional customization)
 - Real-time QR preview as users type
 - One-click download
 - Mobile-friendly interface
 - No unnecessary redirects or auth flows
+
+## Rules to make ui interfaces and components
+
+- High priority to use already existing components in `app/components/ui/`
+- When a component has prop options, use `defineProps` in a constant and if is used on input or select
+- When a component has event options, use `defineEmits` in a constant and if is used on input or select
+- Use `v-model` for inputs and selects and prevent use `v-model:modelValue` or `:value` on inputs
+- Prevent use `@update` for inputs and selects when possible
 
 ---
 

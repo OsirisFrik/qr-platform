@@ -1,18 +1,56 @@
 import QRCode from 'qrcode'
+import { watchDebounced } from '@vueuse/core'
 
 export interface QROptions {
   size: number
   color: string
   backgroundColor: string
   errorCorrection: 'L' | 'M' | 'Q' | 'H'
+  logo: string | null
 }
 
 const defaultOptions: QROptions = {
   size: 200,
   color: '#000000',
   backgroundColor: '#FFFFFF',
-  errorCorrection: 'M'
+  errorCorrection: 'M',
+  logo: null
 }
+
+const compositeLogoOnQR = (qrSrc: string, logoSrc: string, size: number): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const canvas = document.createElement('canvas')
+    canvas.width = size
+    canvas.height = size
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return reject(new Error('Canvas not available'))
+
+    const qrImg = new Image()
+    qrImg.onload = () => {
+      ctx.drawImage(qrImg, 0, 0, size, size)
+
+      const logoImg = new Image()
+      logoImg.onload = () => {
+        const logoSize = size * 0.22
+        const x = (size - logoSize) / 2
+        const y = (size - logoSize) / 2
+        const padding = logoSize * 0.15
+        const bg = logoSize + padding * 2
+
+        ctx.fillStyle = '#FFFFFF'
+        ctx.beginPath()
+        ctx.roundRect(x - padding, y - padding, bg, bg, bg * 0.15)
+        ctx.fill()
+
+        ctx.drawImage(logoImg, x, y, logoSize, logoSize)
+        resolve(canvas.toDataURL('image/png'))
+      }
+      logoImg.onerror = reject
+      logoImg.src = logoSrc
+    }
+    qrImg.onerror = reject
+    qrImg.src = qrSrc
+  })
 
 export const useQRCode = () => {
   const text = ref('')
@@ -28,15 +66,22 @@ export const useQRCode = () => {
 
     try {
       isGenerating.value = true
-      qrDataUrl.value = await QRCode.toDataURL(content, {
+      const hasLogo = !!options.value.logo
+      const baseDataUrl = await QRCode.toDataURL(content, {
         width: options.value.size,
         color: {
           dark: options.value.color,
           light: options.value.backgroundColor
         },
-        errorCorrectionLevel: options.value.errorCorrection,
+        errorCorrectionLevel: hasLogo ? 'H' : options.value.errorCorrection,
         margin: 1
       })
+
+      if (import.meta.client && hasLogo && options.value.logo) {
+        qrDataUrl.value = await compositeLogoOnQR(baseDataUrl, options.value.logo, options.value.size)
+      } else {
+        qrDataUrl.value = baseDataUrl
+      }
     } catch (error) {
       console.error('Error generating QR code:', error)
       qrDataUrl.value = null
@@ -80,18 +125,10 @@ export const useQRCode = () => {
     qrDataUrl.value = null
   }
 
-  watch(
-    text,
-    (newText) => {
-      generateQR(newText)
-    },
-    { debounce: 300 }
-  )
+  watchDebounced(text, (newText: string) => generateQR(newText), { debounce: 300 })
 
-  watch(options, () => {
-    if (text.value) {
-      generateQR(text.value)
-    }
+  watchDebounced(options, () => {
+    if (text.value) generateQR(text.value)
   }, { deep: true, debounce: 300 })
 
   return {

@@ -19,7 +19,11 @@
     "size": "Tamaño del Código QR",
     "darkColor": "Color Oscuro",
     "lightColor": "Color Claro",
-    "errorCorrection": "Nivel de Corrección de Errores"
+    "errorCorrection": "Nivel de Corrección de Errores",
+    "logo": "Imagen Central",
+    "addLogo": "Subir Imagen",
+    "removeLogo": "Eliminar",
+    "logoHint": "La imagen se colocará en el centro. La corrección de errores se establece en Alta automáticamente."
   },
   "reset": "Reiniciar"
 }

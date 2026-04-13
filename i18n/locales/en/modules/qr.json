@@ -19,7 +19,11 @@
     "size": "QR Code Size",
     "darkColor": "Dark Color",
     "lightColor": "Light Color",
-    "errorCorrection": "Error Correction Level"
+    "errorCorrection": "Error Correction Level",
+    "logo": "Center Image",
+    "addLogo": "Upload Image",
+    "removeLogo": "Remove",
+    "logoHint": "Image will be placed at center. Error correction is set to High automatically."
   },
   "reset": "Reset"
 }

@@ -1,22 +1,51 @@
 <script setup lang="ts">
+import { useVModel } from '@vueuse/core'
+import { ImagePlus, X } from 'lucide-vue-next'
 import type { QROptions } from '~/composables/useQRCode'
 
-interface Props {
+const props = defineProps<{
   modelValue: QROptions
-}
+}>()
 
-interface Emits {
+const emit = defineEmits<{
   (e: 'update:modelValue', value: QROptions): void
-}
+}>()
 
-const props = defineProps<Props>()
-const emit = defineEmits<Emits>()
+const model = useVModel(props, 'modelValue', emit, { passive: true })
 
-const update = (key: keyof QROptions, value: any) => {
-  emit('update:modelValue', {
-    ...props.modelValue,
-    [key]: value
-  })
+const sizeModel = computed({
+  get: () => [model.value.size],
+  set: ([val = model.value.size]: number[]) => { model.value = { ...model.value, size: val } }
+})
+
+const colorModel = computed({
+  get: () => model.value.color,
+  set: (val: string) => { model.value = { ...model.value, color: val } }
+})
+
+const bgColorModel = computed({
+  get: () => model.value.backgroundColor,
+  set: (val: string) => { model.value = { ...model.value, backgroundColor: val } }
+})
+
+const errorCorrectionModel = computed({
+  get: () => model.value.errorCorrection,
+  set: (val: string) => { model.value = { ...model.value, errorCorrection: val as QROptions['errorCorrection'] } }
+})
+
+const logoModel = computed({
+  get: () => model.value.logo,
+  set: (val: string | null) => { model.value = { ...model.value, logo: val } }
+})
+
+const fileInput = ref<HTMLInputElement | null>(null)
+
+const onFileChange = (e: Event) => {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = (ev) => { logoModel.value = ev.target?.result as string }
+  reader.readAsDataURL(file)
 }
 
 const errorCorrectionLevels = [
@@ -28,88 +57,83 @@ const errorCorrectionLevels = [
 </script>
 
 <template>
-  <div class="w-full space-y-4 rounded-lg border border-input bg-card p-4">
-    <h3 class="font-semibold text-foreground">
-      {{ $t('qr.options.title') }}
-    </h3>
+  <Card>
+    <CardHeader>
+      <CardTitle>{{ $t('qr.options.title') }}</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <FieldGroup class="gap-4">
 
-    <!-- Size -->
-    <div class="space-y-2">
-      <label class="block text-sm font-medium text-foreground">
-        {{ $t('qr.options.size') }} ({{ modelValue.size }}px)
-      </label>
-      <input
-        type="range"
-        :value="modelValue.size"
-        min="100"
-        max="400"
-        step="10"
-        @input="update('size', parseInt($event.target.value))"
-        class="w-full"
-      />
-    </div>
+        <!-- Size -->
+        <Field>
+          <FieldLabel>{{ $t('qr.options.size') }} ({{ model.size }}px)</FieldLabel>
+          <Slider v-model="sizeModel" :min="100" :max="400" :step="10" />
+        </Field>
 
-    <!-- Colors -->
-    <div class="grid grid-cols-2 gap-4">
-      <div class="space-y-2">
-        <label class="block text-sm font-medium text-foreground">
-          {{ $t('qr.options.darkColor') }}
-        </label>
-        <div class="flex items-center gap-2">
-          <input
-            type="color"
-            :value="modelValue.color"
-            @input="update('color', $event.target.value)"
-            class="h-10 w-12 cursor-pointer rounded border border-input"
-          />
-          <input
-            type="text"
-            :value="modelValue.color"
-            @input="update('color', $event.target.value)"
-            class="flex-1 rounded border border-input bg-background px-2 py-1 text-xs font-mono"
-          />
+        <!-- Colors -->
+        <div class="grid grid-cols-2 gap-4">
+          <Field>
+            <FieldLabel>{{ $t('qr.options.darkColor') }}</FieldLabel>
+            <div class="flex items-center gap-2">
+              <input
+                v-model="colorModel"
+                type="color"
+                class="h-9 w-10 cursor-pointer rounded border border-input p-0.5"
+              />
+              <Input v-model="colorModel" type="text" class="font-mono text-xs" />
+            </div>
+          </Field>
+
+          <Field>
+            <FieldLabel>{{ $t('qr.options.lightColor') }}</FieldLabel>
+            <div class="flex items-center gap-2">
+              <input
+                v-model="bgColorModel"
+                type="color"
+                class="h-9 w-10 cursor-pointer rounded border border-input p-0.5"
+              />
+              <Input v-model="bgColorModel" type="text" class="font-mono text-xs" />
+            </div>
+          </Field>
         </div>
-      </div>
 
-      <div class="space-y-2">
-        <label class="block text-sm font-medium text-foreground">
-          {{ $t('qr.options.lightColor') }}
-        </label>
-        <div class="flex items-center gap-2">
-          <input
-            type="color"
-            :value="modelValue.backgroundColor"
-            @input="update('backgroundColor', $event.target.value)"
-            class="h-10 w-12 cursor-pointer rounded border border-input"
-          />
-          <input
-            type="text"
-            :value="modelValue.backgroundColor"
-            @input="update('backgroundColor', $event.target.value)"
-            class="flex-1 rounded border border-input bg-background px-2 py-1 text-xs font-mono"
-          />
-        </div>
-      </div>
-    </div>
+        <!-- Error Correction -->
+        <Field>
+          <FieldLabel>{{ $t('qr.options.errorCorrection') }}</FieldLabel>
+          <NativeSelect v-model="errorCorrectionModel" class="w-full">
+            <NativeSelectOption
+              v-for="level in errorCorrectionLevels"
+              :key="level.value"
+              :value="level.value"
+            >
+              {{ level.label }}
+            </NativeSelectOption>
+          </NativeSelect>
+        </Field>
 
-    <!-- Error Correction -->
-    <div class="space-y-2">
-      <label class="block text-sm font-medium text-foreground">
-        {{ $t('qr.options.errorCorrection') }}
-      </label>
-      <select
-        :value="modelValue.errorCorrection"
-        @change="update('errorCorrection', $event.target.value)"
-        class="w-full rounded border border-input bg-background px-3 py-2 text-sm"
-      >
-        <option
-          v-for="level in errorCorrectionLevels"
-          :key="level.value"
-          :value="level.value"
-        >
-          {{ level.label }}
-        </option>
-      </select>
-    </div>
-  </div>
+        <!-- Logo -->
+        <Field>
+          <FieldLabel>{{ $t('qr.options.logo') }}</FieldLabel>
+          <div v-if="logoModel" class="flex items-center gap-3">
+            <div class="flex h-14 w-14 items-center justify-center rounded-md border border-input bg-muted p-1.5">
+              <img :src="logoModel" alt="Logo" class="max-h-full max-w-full object-contain" />
+            </div>
+            <Button variant="ghost" size="sm" @click="logoModel = null">
+              <X class="h-4 w-4" />
+              {{ $t('qr.options.removeLogo') }}
+            </Button>
+          </div>
+          <template v-else>
+            <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="onFileChange" />
+            <Button variant="outline" size="sm" @click="fileInput?.click()">
+              <ImagePlus class="h-4 w-4" />
+              {{ $t('qr.options.addLogo') }}
+            </Button>
+          </template>
+          <FieldDescription>{{ $t('qr.options.logoHint') }}</FieldDescription>
+        </Field>
+
+      </FieldGroup>
+    </CardContent>
+  </Card>
 </template>

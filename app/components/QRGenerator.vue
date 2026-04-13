@@ -37,11 +37,9 @@ const handleCopy = async () => {
     </div>
 
     <!-- Main Content -->
-    <div class="space-y-4">
-      <!-- Input Section -->
+    <FieldGroup class="gap-4">
       <QRInput v-model="text" />
 
-      <!-- Preview Section -->
       <QRPreview
         :data-url="qrDataUrl"
         :is-generating="isGenerating"
@@ -50,19 +48,12 @@ const handleCopy = async () => {
       />
 
       <!-- Options Toggle -->
-      <button
-        @click="showOptions = !showOptions"
-        class="w-full rounded-lg border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition hover:bg-muted"
-      >
-        {{
-          showOptions
-            ? $t('qr.options.hide')
-            : $t('qr.options.show')
-        }}
-      </button>
+      <Button variant="outline" class="w-full" @click="showOptions = !showOptions">
+        {{ showOptions ? $t('qr.options.hide') : $t('qr.options.show') }}
+      </Button>
 
       <!-- Options Section -->
-      <transition
+      <Transition
         enter-active-class="transition duration-200"
         enter-from-class="opacity-0 -translate-y-2"
         enter-to-class="opacity-100 translate-y-0"
@@ -70,20 +61,19 @@ const handleCopy = async () => {
         leave-from-class="opacity-100 translate-y-0"
         leave-to-class="opacity-0 -translate-y-2"
       >
-        <div v-show="showOptions">
-          <QROptions v-model="options" />
-        </div>
-      </transition>
+        <QROptions v-if="showOptions" v-model="options" />
+      </Transition>
 
       <!-- Reset Button -->
-      <button
+      <Button
         v-if="text || qrDataUrl"
+        variant="destructive"
+        class="self-start"
         @click="reset"
-        class="inline-flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm font-medium text-destructive transition hover:bg-destructive/20"
       >
         <RotateCcw class="h-4 w-4" />
         {{ $t('qr.reset') }}
-      </button>
-    </div>
+      </Button>
+    </FieldGroup>
   </div>
 </template>
