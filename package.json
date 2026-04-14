@@ -12,8 +12,6 @@
   },
   "dependencies": {
     "@nuxtjs/i18n": "^10.2.4",
-    "@nuxtjs/supabase": "^2.0.5",
-    "@tanstack/vue-table": "^8.21.3",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "@vueuse/core": "^14.2.1",
@@ -24,12 +22,9 @@
     "qrcode": "^1.5.4",
     "reka-ui": "^2.9.5",
     "shadcn-nuxt": "2.6.2",
-    "supabase": "^2.89.1",
     "tailwind-merge": "^3.5.0",
     "vue": "^3.5.32",
-    "vue-router": "^5.0.4",
-    "vue-sonner": "^2.0.9",
-    "zod": "^4.3.6"
+    "vue-router": "^5.0.4"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.2",

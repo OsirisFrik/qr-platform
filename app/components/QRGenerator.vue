@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { track } from '@vercel/analytics'
 import { RotateCcw, Type, Wifi } from 'lucide-vue-next'
 import { useQRCode } from '~/composables/useQRCode'
 import { useQRHistory, type QRHistoryItem } from '~/composables/useQRHistory'
@@ -19,7 +20,9 @@ const showOptions = ref(false)
 const mode = ref<'text' | 'wifi'>('text')
 const wifiText = ref('')
 
-const activeText = computed(() => mode.value === 'wifi' ? wifiText.value : text.value)
+const activeText = computed(() =>
+  mode.value === 'wifi' ? wifiText.value : text.value
+)
 
 watch(mode, () => {
   reset()
@@ -34,12 +37,14 @@ watch(wifiText, (val) => {
 const handleDownload = async () => {
   const filename = `qr-code-${Date.now()}.png`
   await downloadQR(filename)
-  if (qrDataUrl.value) addToHistory(activeText.value, qrDataUrl.value, options.value)
+  if (qrDataUrl.value)
+    addToHistory(activeText.value, qrDataUrl.value, options.value)
 }
 
 const handleCopy = async () => {
   await copyToClipboard()
-  if (qrDataUrl.value) addToHistory(activeText.value, qrDataUrl.value, options.value)
+  if (qrDataUrl.value)
+    addToHistory(activeText.value, qrDataUrl.value, options.value)
 }
 
 const handleRestore = (item: QRHistoryItem) => {
@@ -54,42 +59,53 @@ const handleRestore = (item: QRHistoryItem) => {
   options.value = { ...item.options }
 }
 
-const hasContent = computed(() => mode.value === 'wifi' ? !!wifiText.value : !!text.value)
+const hasContent = computed(() =>
+  mode.value === 'wifi' ? !!wifiText.value : !!text.value
+)
 </script>
 
 <template>
   <div class="w-full max-w-2xl space-y-6">
     <!-- Header -->
     <div class="text-center">
-      <h1 class="text-3xl font-bold text-foreground">
-        {{ $t('qr.title') }}
+      <h1 class="text-foreground text-3xl font-bold">
+        {{ $t('title') }}
       </h1>
-      <p class="mt-2 text-muted-foreground">
-        {{ $t('qr.subtitle') }}
+      <p class="text-muted-foreground mt-2">
+        {{ $t('subtitle') }}
       </p>
     </div>
 
     <!-- Main Content -->
     <FieldGroup class="gap-4">
-
       <!-- Mode Toggle -->
       <ButtonGroup class="w-full">
         <Button
           :variant="mode === 'text' ? 'default' : 'outline'"
           class="flex-1"
-          @click="mode = 'text'"
+          @click="
+            () => {
+              mode = 'text'
+              track('qr:mode:text')
+            }
+          "
         >
           <Type class="h-4 w-4" />
-          {{ $t('qr.mode.text') }}
+          {{ $t('mode.text') }}
         </Button>
         <ButtonGroupSeparator />
         <Button
           :variant="mode === 'wifi' ? 'default' : 'outline'"
           class="flex-1"
-          @click="mode = 'wifi'"
+          @click="
+            () => {
+              mode = 'wifi'
+              track('qr:mode:wifi')
+            }
+          "
         >
           <Wifi class="h-4 w-4" />
-          {{ $t('qr.mode.wifi') }}
+          {{ $t('mode.wifi') }}
         </Button>
       </ButtonGroup>
 
@@ -115,8 +131,18 @@ const hasContent = computed(() => mode.value === 'wifi' ? !!wifiText.value : !!t
       />
 
       <!-- Options Toggle (only for text mode) -->
-      <Button v-if="mode === 'text'" variant="outline" class="w-full" @click="showOptions = !showOptions">
-        {{ showOptions ? $t('qr.options.hide') : $t('qr.options.show') }}
+      <Button
+        v-if="mode === 'text'"
+        variant="outline"
+        class="w-full"
+        @click="
+          () => {
+            showOptions = !showOptions
+            track('qr:options:toggle')
+          }
+        "
+      >
+        {{ showOptions ? $t('options.hide') : $t('options.show') }}
       </Button>
 
       <!-- Options Section -->
@@ -136,10 +162,16 @@ const hasContent = computed(() => mode.value === 'wifi' ? !!wifiText.value : !!t
         v-if="hasContent || qrDataUrl"
         variant="destructive"
         class="self-start"
-        @click="reset(); wifiText = ''"
+        @click="
+          () => {
+            reset()
+            wifiText = ''
+            track('qr:reset')
+          }
+        "
       >
         <RotateCcw class="h-4 w-4" />
-        {{ $t('qr.reset') }}
+        {{ $t('reset') }}
       </Button>
 
       <!-- History -->

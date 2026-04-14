@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { track } from '@vercel/analytics'
 import { Trash2, RotateCcw, Clock, X } from 'lucide-vue-next'
 import { useQRHistory, type QRHistoryItem } from '~/composables/useQRHistory'
 
@@ -16,10 +17,10 @@ const formatDate = (timestamp: number) => {
   const hours = Math.floor(diff / 3_600_000)
   const days = Math.floor(diff / 86_400_000)
 
-  if (minutes < 1) return t('qr.history.justNow')
-  if (minutes < 60) return t('qr.history.minutesAgo', { n: minutes })
-  if (hours < 24) return t('qr.history.hoursAgo', { n: hours })
-  return t('qr.history.daysAgo', { n: days })
+  if (minutes < 1) return t('history.justNow')
+  if (minutes < 60) return t('history.minutesAgo', { n: minutes })
+  if (hours < 24) return t('history.hoursAgo', { n: hours })
+  return t('history.daysAgo', { n: days })
 }
 
 const truncateText = (text: string, max = 40) =>
@@ -31,16 +32,21 @@ const truncateText = (text: string, max = 40) =>
     <div class="flex items-center justify-between">
       <div class="text-foreground flex items-center gap-2 text-sm font-medium">
         <Clock class="h-4 w-4" />
-        {{ $t('qr.history.title') }}
+        {{ $t('history.title') }}
       </div>
       <Button
         variant="ghost"
         size="sm"
         class="text-muted-foreground hover:text-destructive h-7 gap-1 px-2 text-xs"
-        @click="clearHistory"
+        @click="
+          () => {
+            track('qr:history:clear')
+            clearHistory()
+          }
+        "
       >
         <Trash2 class="h-3.5 w-3.5" />
-        {{ $t('qr.history.clearAll') }}
+        {{ $t('history.clearAll') }}
       </Button>
     </div>
 
@@ -73,8 +79,13 @@ const truncateText = (text: string, max = 40) =>
             variant="ghost"
             size="icon"
             class="text-muted-foreground hover:text-foreground h-7 w-7"
-            :title="$t('qr.history.restore')"
-            @click="emit('restore', item)"
+            :title="$t('history.restore')"
+            @click="
+              () => {
+                track('qr:history:restore')
+                emit('restore', item)
+              }
+            "
           >
             <RotateCcw class="h-3.5 w-3.5" />
           </Button>
@@ -82,8 +93,13 @@ const truncateText = (text: string, max = 40) =>
             variant="ghost"
             size="icon"
             class="text-muted-foreground hover:text-destructive h-7 w-7"
-            :title="$t('qr.history.remove')"
-            @click="removeFromHistory(item.id)"
+            :title="$t('history.remove')"
+            @click="
+              () => {
+                track('qr:history:remove')
+                removeFromHistory(item.id)
+              }
+            "
           >
             <X class="h-3.5 w-3.5" />
           </Button>

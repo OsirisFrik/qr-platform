@@ -1,12 +1,15 @@
 <script setup lang="ts">
-const props = withDefaults(defineProps<{
-  modelValue: string
-  placeholder?: string
-  disabled?: boolean
-}>(), {
-  placeholder: 'Enter URL or text...',
-  disabled: false,
-})
+const props = withDefaults(
+  defineProps<{
+    modelValue: string
+    placeholder?: string
+    disabled?: boolean
+  }>(),
+  {
+    placeholder: 'Enter URL or text...',
+    disabled: false
+  }
+)
 
 const emits = defineEmits<{
   (e: 'update:modelValue', value: string): void
@@ -15,7 +18,7 @@ const emits = defineEmits<{
 
 <template>
   <Field>
-    <FieldLabel>{{ $t('qr.input.label') }}</FieldLabel>
+    <FieldLabel>{{ $t('input.label') }}</FieldLabel>
     <Textarea
       :model-value="props.modelValue"
       :placeholder="placeholder"
@@ -23,6 +26,6 @@ const emits = defineEmits<{
       class="min-h-24 resize-none"
       @update:model-value="emits('update:modelValue', String($event))"
     />
-    <FieldDescription>{{ $t('qr.input.hint') }}</FieldDescription>
+    <FieldDescription>{{ $t('input.hint') }}</FieldDescription>
   </Field>
 </template>

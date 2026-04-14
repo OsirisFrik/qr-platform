@@ -12,6 +12,17 @@ export default defineNuxtConfig({
         'https://tigers-childhood-bridal-boss.trycloudflare.com/',
         '8263-201-170-65-198.ngrok-free.app'
       ]
+    },
+    optimizeDeps: {
+      include: [
+        '@vueuse/core',
+        'lucide-vue-next',
+        'class-variance-authority',
+        'reka-ui',
+        'qrcode', // CJS
+        'clsx',
+        'tailwind-merge'
+      ]
     }
   },
 
@@ -38,17 +49,6 @@ export default defineNuxtConfig({
     componentDir: '@/components/ui'
   },
 
-  // supabase configs
-  // supabase: {
-  //   redirect: true,
-  //   redirectOptions: {
-  //     login: '/login',
-  //     callback: '/login/confirm',
-  //     include: ['/dashboard'],
-  //     saveRedirectToCookie: true
-  //   }
-  // },
-
   // i18n configs
   i18n: {
     strategy: 'no_prefix',
@@ -58,13 +58,13 @@ export default defineNuxtConfig({
         code: 'en',
         name: 'English',
         iso: 'en-US',
-        file: 'en/index.ts'
+        file: 'en.json'
       },
       {
         code: 'es',
         name: 'Español',
         iso: 'es-ES',
-        file: 'es/index.ts'
+        file: 'es.json'
       }
     ]
   },

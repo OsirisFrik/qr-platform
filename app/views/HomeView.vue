@@ -3,7 +3,7 @@
     class="from-background via-background to-muted flex min-h-screen items-center justify-center bg-linear-to-br p-4"
   >
     <QRGenerator />
-    <div class="fixed right-6 bottom-6 flex items-center gap-2">
+    <div class="fixed top-6 right-6 flex items-center gap-2">
       <GitHubStars />
       <LanguageSwitcher />
       <ThemeToggle />

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { track } from '@vercel/analytics'
 import { useVModel } from '@vueuse/core'
 import { ImagePlus, X } from 'lucide-vue-next'
 import type { QROptions } from '~/composables/useQRCode'
@@ -15,27 +16,40 @@ const model = useVModel(props, 'modelValue', emit, { passive: true })
 
 const sizeModel = computed({
   get: () => [model.value.size],
-  set: ([val = model.value.size]: number[]) => { model.value = { ...model.value, size: val } }
+  set: ([val = model.value.size]: number[]) => {
+    model.value = { ...model.value, size: val }
+  }
 })
 
 const colorModel = computed({
   get: () => model.value.color,
-  set: (val: string) => { model.value = { ...model.value, color: val } }
+  set: (val: string) => {
+    model.value = { ...model.value, color: val }
+  }
 })
 
 const bgColorModel = computed({
   get: () => model.value.backgroundColor,
-  set: (val: string) => { model.value = { ...model.value, backgroundColor: val } }
+  set: (val: string) => {
+    model.value = { ...model.value, backgroundColor: val }
+  }
 })
 
 const errorCorrectionModel = computed({
   get: () => model.value.errorCorrection,
-  set: (val: string) => { model.value = { ...model.value, errorCorrection: val as QROptions['errorCorrection'] } }
+  set: (val: string) => {
+    model.value = {
+      ...model.value,
+      errorCorrection: val as QROptions['errorCorrection']
+    }
+  }
 })
 
 const logoModel = computed({
   get: () => model.value.logo,
-  set: (val: string | null) => { model.value = { ...model.value, logo: val } }
+  set: (val: string | null) => {
+    model.value = { ...model.value, logo: val }
+  }
 })
 
 const fileInput = ref<HTMLInputElement | null>(null)
@@ -44,7 +58,9 @@ const onFileChange = (e: Event) => {
   const file = (e.target as HTMLInputElement).files?.[0]
   if (!file) return
   const reader = new FileReader()
-  reader.onload = (ev) => { logoModel.value = ev.target?.result as string }
+  reader.onload = (ev) => {
+    logoModel.value = ev.target?.result as string
+  }
   reader.readAsDataURL(file)
 }
 
@@ -59,47 +75,54 @@ const errorCorrectionLevels = [
 <template>
   <Card>
     <CardHeader>
-      <CardTitle>{{ $t('qr.options.title') }}</CardTitle>
+      <CardTitle>{{ $t('options.title') }}</CardTitle>
     </CardHeader>
     <CardContent>
       <FieldGroup class="gap-4">
-
         <!-- Size -->
         <Field>
-          <FieldLabel>{{ $t('qr.options.size') }} ({{ model.size }}px)</FieldLabel>
+          <FieldLabel>{{ $t('options.size') }} ({{ model.size }}px)</FieldLabel>
           <Slider v-model="sizeModel" :min="100" :max="400" :step="10" />
         </Field>
 
         <!-- Colors -->
         <div class="grid grid-cols-2 gap-4">
           <Field>
-            <FieldLabel>{{ $t('qr.options.darkColor') }}</FieldLabel>
+            <FieldLabel>{{ $t('options.darkColor') }}</FieldLabel>
             <div class="flex items-center gap-2">
               <input
                 v-model="colorModel"
                 type="color"
-                class="h-9 w-10 cursor-pointer rounded border border-input p-0.5"
+                class="border-input h-9 w-10 cursor-pointer rounded border p-0.5"
               />
-              <Input v-model="colorModel" type="text" class="font-mono text-xs" />
+              <Input
+                v-model="colorModel"
+                type="text"
+                class="font-mono text-xs"
+              />
             </div>
           </Field>
 
           <Field>
-            <FieldLabel>{{ $t('qr.options.lightColor') }}</FieldLabel>
+            <FieldLabel>{{ $t('options.lightColor') }}</FieldLabel>
             <div class="flex items-center gap-2">
               <input
                 v-model="bgColorModel"
                 type="color"
-                class="h-9 w-10 cursor-pointer rounded border border-input p-0.5"
+                class="border-input h-9 w-10 cursor-pointer rounded border p-0.5"
               />
-              <Input v-model="bgColorModel" type="text" class="font-mono text-xs" />
+              <Input
+                v-model="bgColorModel"
+                type="text"
+                class="font-mono text-xs"
+              />
             </div>
           </Field>
         </div>
 
         <!-- Error Correction -->
         <Field>
-          <FieldLabel>{{ $t('qr.options.errorCorrection') }}</FieldLabel>
+          <FieldLabel>{{ $t('options.errorCorrection') }}</FieldLabel>
           <NativeSelect v-model="errorCorrectionModel" class="w-full">
             <NativeSelectOption
               v-for="level in errorCorrectionLevels"
@@ -113,26 +136,55 @@ const errorCorrectionLevels = [
 
         <!-- Logo -->
         <Field>
-          <FieldLabel>{{ $t('qr.options.logo') }}</FieldLabel>
+          <FieldLabel>{{ $t('options.logo') }}</FieldLabel>
           <div v-if="logoModel" class="flex items-center gap-3">
-            <div class="flex h-14 w-14 items-center justify-center rounded-md border border-input bg-muted p-1.5">
-              <img :src="logoModel" alt="Logo" class="max-h-full max-w-full object-contain" />
+            <div
+              class="border-input bg-muted flex h-14 w-14 items-center justify-center rounded-md border p-1.5"
+            >
+              <img
+                :src="logoModel"
+                alt="Logo"
+                class="max-h-full max-w-full object-contain"
+              />
             </div>
-            <Button variant="ghost" size="sm" @click="logoModel = null">
+            <Button
+              variant="ghost"
+              size="sm"
+              @click="
+                () => {
+                  logoModel = null
+                  track('qr:options:removeLogo')
+                }
+              "
+            >
               <X class="h-4 w-4" />
-              {{ $t('qr.options.removeLogo') }}
+              {{ $t('options.removeLogo') }}
             </Button>
           </div>
           <template v-else>
-            <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="onFileChange" />
-            <Button variant="outline" size="sm" @click="fileInput?.click()">
+            <input
+              ref="fileInput"
+              type="file"
+              accept="image/*"
+              class="hidden"
+              @change="onFileChange"
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              @click="
+                () => {
+                  fileInput?.click()
+                  track('qr:options:addLogo')
+                }
+              "
+            >
               <ImagePlus class="h-4 w-4" />
-              {{ $t('qr.options.addLogo') }}
+              {{ $t('options.addLogo') }}
             </Button>
           </template>
-          <FieldDescription>{{ $t('qr.options.logoHint') }}</FieldDescription>
+          <FieldDescription>{{ $t('options.logoHint') }}</FieldDescription>
         </Field>
-
       </FieldGroup>
     </CardContent>
   </Card>

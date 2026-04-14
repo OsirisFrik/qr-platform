@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**QR Platform** is a Vue 3/Nuxt 4 web application for generating QR codes. The design prioritizes simplicity — users should be able to generate QR codes without complicated workflows. The platform will expand with additional features over time.
+**QR Platform** is a Vue 3/Nuxt 4 web application for generating QR codes with a focus on simplicity and intuitive UX. Users can generate QR codes for URLs, text, WiFi networks, and other formats without complex workflows.
 
-Current focus: Build a simple, intuitive QR code generator. Authentication and dashboard features are deferred.
+Current focus: Build a simple, intuitive QR code generator with real-time preview and download capability. Authentication and dashboard features are deferred.
 
 ## Development Commands
 
@@ -28,71 +28,189 @@ pnpm generate
 
 # Add shadcn components
 pnpm shad add [component-name]
+
+# Format code with Prettier
+pnpm format
+
+# Check code formatting without changes
+pnpm format --check
 ```
 
 ## Tech Stack
 
-- **Framework**: Nuxt 4 (Vue 3 with SSR support)
+- **Framework**: Nuxt 4 (Vue 3 with universal SSR rendering)
 - **Styling**: Tailwind CSS v4 + shadcn-nuxt (Vue port of shadcn/ui)
+- **QR Generation**: `qrcode` library
 - **UI Icons**: lucide-vue-next
 - **Notifications**: vue-sonner (toast/notification system)
 - **Internationalization**: @nuxtjs/i18n (en, es locales)
 - **State Management**: Vue composables + useState (Nuxt built-in)
+- **Analytics**: @vercel/analytics, @vercel/speed-insights
+- **Code Formatting**: Prettier with import sorting and Tailwind class organization
 
 ## Architecture & Code Organization
+
+### Core QR Generation Flow
+
+The QR generator is centered around the **index page** with a modular component architecture:
+
+1. **Input Layer** (`QRInput.vue`, `QRWifiInput.vue`): Captures user input (URL, text, WiFi credentials)
+2. **Options Layer** (`QROptions.vue`): Provides customization (error correction level, size, colors)
+3. **Preview Layer** (`QRPreview.vue`): Real-time QR code rendering using the `qrcode` library
+4. **History Layer** (`QRHistory.vue`): Stores recently generated QR codes in component state
+5. **Type Selection** (`QRTypeSelector.vue`): Allows users to choose QR type (URL, text, WiFi)
+
+**Key Composable**: `QRGenerator.vue` orchestrates the entire flow, managing:
+
+- Input state across different QR types
+- Preview updates as users type
+- History management
+- Download functionality
 
 ### Directory Structure
 
 ```
 app/
-├── pages/          # File-based routes (auto-routed by Nuxt)
-│   ├── index.vue   # Homepage (main QR generator page)
-│   ├── login.vue   # (placeholder, not currently in use)
-│   └── sign-up.vue # (placeholder, not currently in use)
-├── components/     # Vue components (auto-imported)
-│   ├── ui/         # shadcn-nuxt components (managed by CLI)
-│   ├── forms/      # Form components (placeholder)
-│   └── layouts/    # Layout components (AppSidebar, NavMain, etc.)
-├── composables/    # Reusable Vue composition functions (auto-imported)
-├── libs/           # Utility libraries
-├── utils/          # Helper functions
-│   └── shadUtils.ts # shadcn component utility functions
-├── assets/         # Static assets (CSS, SVGs)
-│   └── css/        # Global styles and Tailwind setup
-└── views/          # Page-level view components (used by pages/)
+├── pages/
+│   ├── index.vue       # Main QR generator page (primary feature)
+│   ├── login.vue       # Placeholder (not in use)
+│   └── sign-up.vue     # Placeholder (not in use)
+├── components/
+│   ├── QRGenerator.vue      # Main orchestrator component
+│   ├── QRInput.vue          # Text/URL input form
+│   ├── QRWifiInput.vue      # WiFi credential input form
+│   ├── QROptions.vue        # QR customization options
+│   ├── QRPreview.vue        # QR code canvas display
+│   ├── QRHistory.vue        # History of generated QRs
+│   ├── QRTypeSelector.vue   # QR type selector (URL, text, WiFi, etc.)
+│   ├── GitHubStars.vue      # Repository link component
+│   ├── LanguageSwitcher.vue # i18n locale switcher
+│   ├── ui/                  # shadcn-nuxt components (auto-imported)
+│   ├── forms/               # Form components (placeholder)
+│   └── layouts/             # Layout components
+├── composables/             # Reusable Vue composition functions (auto-imported)
+├── utils/
+│   └── shadUtils.ts         # shadcn component utility functions
+├── assets/
+│   └── css/
+│       └── tailwind.css     # Global styles and Tailwind v4 setup
+└── views/                   # Page-level view components (used by pages/)
 
-types/             # TypeScript type definitions
-i18n/              # Translation files (en, es locales)
+types/                        # TypeScript type definitions
+i18n/                         # Translation files
+├── locales/
+│   ├── en.json             # English translations
+│   └── es.json             # Spanish translations
 ```
 
 ### Key Patterns
 
+#### QR Generation with the `qrcode` Library
+
+The app uses the `qrcode` npm package for QR generation. The `QRPreview.vue` component:
+
+- Takes input text/URL via props
+- Renders QR code to canvas using `qrcode.toCanvas()`
+- Supports customization options (error correction, size, colors)
+- Provides download functionality via `canvas.toBlob()`
+
 #### Styling
 
 - Tailwind v4 with `@tailwindcss/vite` plugin
-- shadcn components auto-imported (no manual imports)
-- Use `pnpm shad add` to add new UI components
-- Icons from lucide-vue-next
+- shadcn components auto-imported (no manual imports required)
+- Use `pnpm shad add [component-name]` to add new UI components
+- Icons from lucide-vue-next (configured in `components.json` with alias `lucide`)
+- **Important**: Prettier auto-organizes Tailwind classes when formatting
 
 #### Internationalization
 
 - Locales: `en` (English), `es` (Español)
-- Translation files in `i18n/locales/{lang}/index.ts`
-- useI18n composable available in all components
+- Translation files in `i18n/locales/` as JSON files (not TypeScript)
+- Use `useI18n()` composable in components to access translations
+- Strategy: `no_prefix` (no URL prefix for locale selection)
 
 #### Component Library
 
-- shadcn-nuxt components auto-imported (no manual imports)
+- shadcn-nuxt components auto-imported (no manual imports needed)
 - All UI components live in `app/components/ui/`
 - Add new components with: `pnpm shad add [component-name]`
+- New components being developed: `textarea` and `slider` (already added to UI directory)
+
+#### Component Aliases
+
+Defined in `components.json` for cleaner imports:
+
+- `@/components` → components directory
+- `@/components/ui` → shadcn UI components
+- `@/utils/shadUtils` → shadcn utility functions
+- `@/composables` → composition functions
+
+#### Dark Mode
+
+The app is configured for dark mode by default:
+
+- `<html class="dark">` set in `nuxt.config.ts`
+- All shadcn components use dark theme CSS variables
+- If adding theme switching, use a `ThemeProvider` component pattern
+
+#### Code Formatting
+
+Prettier is configured with:
+
+- Import sorting: 3rd party → `@/` aliases → relative imports
+- Tailwind class sorting (via `prettier-plugin-tailwindcss`)
+- 80-character line width
+- 2-space indentation
+- Single quotes, no semicolons, trailing commas off
+
+Run `pnpm format` before committing to maintain consistency.
+
+## Important Configuration Files
+
+- **nuxt.config.ts**: Framework modules (shadcn, i18n), Tailwind Vite plugin, app head metadata, SSR configuration
+- **components.json**: shadcn component registry, icon library config, component aliases
+- **package.json**: Scripts, dependencies, and pnpm workspace configuration
+- **.prettierrc**: Code formatting rules with import and Tailwind class sorting
+- **tsconfig.json**: TypeScript references to Nuxt-generated configs
+
+## Design Principles
+
+Keep the QR generator simple and fast:
+
+- Minimize form fields (input + optional customization only)
+- Real-time QR preview as users type
+- One-click download with descriptive filenames
+- Mobile-friendly responsive interface
+- No unnecessary redirects or authentication flows
+- Support multiple QR types (URL, text, WiFi) via type selector
+
+## UI Component Rules
+
+- High priority to use existing components in `app/components/ui/`
+- Use `defineProps` as a constant for component configuration
+- Use `v-model` for inputs and selects (not `:value` or `v-model:modelValue`)
+- Prefer `defineEmits` as a constant for event definitions
+- Avoid `@update` event handlers when `v-model` is available
+- Use `useVModel` for `v-model` composition
+
+## Untracked Components in Development
+
+These components are in git status as untracked (new features being added):
+
+- `QRTypeSelector.vue` — Selector for QR code type (URL, text, WiFi, vCard, etc.)
+- `QRWhatsAppInput.vue` — Specialized input for WhatsApp contact sharing
+- `ui/slider/` — New slider component for QR customization options
+- `ui/textarea/` — New textarea component for longer text inputs
 
 ## Common Tasks
 
-### Creating a New Page
+### Creating a New QR Input Type
 
-1. Create file in `app/pages/` (e.g., `app/pages/about.vue`)
-2. Nuxt auto-routes it based on filename
-3. File-based routing handles navigation automatically
+1. Create a new input component in `app/components/` (e.g., `QREmailInput.vue`)
+2. Export the input handler function and TypeScript interface
+3. Update `QRTypeSelector.vue` to include the new type
+4. Update `QRGenerator.vue` to handle the new type in the input/preview logic
+5. Add translations for the new type to `i18n/locales/{en,es}.json`
 
 ### Adding a shadcn Component
 
@@ -104,32 +222,23 @@ Components are auto-imported; no manual setup needed.
 
 ### Adding Translations
 
-1. Add keys to `i18n/locales/en/index.ts` and `i18n/locales/es/index.ts`
-2. Use `useI18n()` in components to access translations
+1. Add keys to `i18n/locales/en.json` and `i18n/locales/es.json`
+2. Use `const { t } = useI18n()` in components to access: `t('key')`
 
-## Important Configuration Files
+### Downloading QR Codes
 
-- **nuxt.config.ts**: Module setup (shadcn, i18n), Tailwind Vite plugin
-- **components.json**: shadcn component registry (auto-imported, icons config)
-- **package.json**: Scripts and dependencies
+The `QRPreview.vue` component provides download via:
 
-## Design Principles
+1. Reference to canvas element
+2. Use `canvas.toBlob()` to get image data
+3. Trigger download using `URL.createObjectURL()` and anchor click
 
-Keep the QR generator simple and fast:
+## Deployment Notes
 
-- Minimize form fields (input URL/text + optional customization)
-- Real-time QR preview as users type
-- One-click download
-- Mobile-friendly interface
-- No unnecessary redirects or auth flows
-
-## Rules to make ui interfaces and components
-
-- High priority to use already existing components in `app/components/ui/`
-- When a component has prop options, use `defineProps` in a constant and if is used on input or select
-- When a component has event options, use `defineEmits` in a constant and if is used on input or select
-- Use `v-model` for inputs and selects and prevent use `v-model:modelValue` or `:value` on inputs
-- Prevent use `@update` for inputs and selects when possible
+- **Vercel Analytics** enabled for tracking page views and user behavior
+- **Vercel Speed Insights** enabled for Web Vitals monitoring
+- Static generation not typically needed (SSR provides dynamic content)
+- Environment: Check `nuxt.config.ts` `compatibilityDate` for Node.js version compatibility
 
 ---
 

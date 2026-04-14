@@ -18,7 +18,7 @@ const showPassword = ref(false)
 const securityOptions = [
   { value: 'WPA', label: 'WPA/WPA2' },
   { value: 'WEP', label: 'WEP' },
-  { value: 'nopass', label: 'None' },
+  { value: 'nopass', label: 'None' }
 ]
 
 const wifiString = computed(() => {
@@ -38,14 +38,16 @@ watch(wifiString, (val) => emit('update:modelValue', val), { immediate: true })
   <FieldGroup class="gap-4">
     <!-- SSID -->
     <Field>
-      <FieldLabel>{{ $t('qr.wifi.ssid') }}</FieldLabel>
+      <FieldLabel>{{ $t('wifi.ssid') }}</FieldLabel>
       <div class="relative">
-        <Wifi class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Wifi
+          class="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2"
+        />
         <Input
           v-model="ssid"
           type="text"
           class="pl-9"
-          :placeholder="$t('qr.wifi.ssidPlaceholder')"
+          :placeholder="$t('wifi.ssidPlaceholder')"
           autocomplete="off"
         />
       </div>
@@ -53,7 +55,7 @@ watch(wifiString, (val) => emit('update:modelValue', val), { immediate: true })
 
     <!-- Security -->
     <Field>
-      <FieldLabel>{{ $t('qr.wifi.security') }}</FieldLabel>
+      <FieldLabel>{{ $t('wifi.security') }}</FieldLabel>
       <NativeSelect v-model="security" class="w-full">
         <NativeSelectOption
           v-for="opt in securityOptions"
@@ -67,19 +69,21 @@ watch(wifiString, (val) => emit('update:modelValue', val), { immediate: true })
 
     <!-- Password -->
     <Field v-if="security !== 'nopass'">
-      <FieldLabel>{{ $t('qr.wifi.password') }}</FieldLabel>
+      <FieldLabel>{{ $t('wifi.password') }}</FieldLabel>
       <div class="relative">
         <Input
           v-model="password"
           :type="showPassword ? 'text' : 'password'"
           class="pr-10"
-          :placeholder="$t('qr.wifi.passwordPlaceholder')"
+          :placeholder="$t('wifi.passwordPlaceholder')"
           autocomplete="off"
         />
         <button
           type="button"
-          class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-          :aria-label="showPassword ? $t('qr.wifi.hidePassword') : $t('qr.wifi.showPassword')"
+          class="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2"
+          :aria-label="
+            showPassword ? $t('wifi.hidePassword') : $t('wifi.showPassword')
+          "
           @click="showPassword = !showPassword"
         >
           <EyeOff v-if="showPassword" class="h-4 w-4" />
@@ -92,11 +96,14 @@ watch(wifiString, (val) => emit('update:modelValue', val), { immediate: true })
     <Field>
       <div class="flex items-center gap-3">
         <Checkbox id="wifi-hidden" v-model:checked="hidden" />
-        <label for="wifi-hidden" class="cursor-pointer text-sm font-medium leading-none">
-          {{ $t('qr.wifi.hidden') }}
+        <label
+          for="wifi-hidden"
+          class="cursor-pointer text-sm leading-none font-medium"
+        >
+          {{ $t('wifi.hidden') }}
         </label>
       </div>
-      <FieldDescription>{{ $t('qr.wifi.hiddenHint') }}</FieldDescription>
+      <FieldDescription>{{ $t('wifi.hiddenHint') }}</FieldDescription>
     </Field>
   </FieldGroup>
 </template>
