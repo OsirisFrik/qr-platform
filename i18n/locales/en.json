@@ -27,7 +27,18 @@
   },
   "mode": {
     "text": "Text / URL",
-    "wifi": "WiFi"
+    "wifi": "WiFi",
+    "whatsapp": "WhatsApp"
+  },
+  "whatsapp": {
+    "phone": "Phone Number",
+    "phonePlaceholder": "+1 555 000 0000",
+    "phoneHint": "Include country code (e.g. +1 for US, +52 for Mexico)",
+    "message": "Pre-filled Message",
+    "messagePlaceholder": "Hello! I'd like to get in touch...",
+    "messageHint": "Optional. The recipient will see this message pre-filled when they open the chat.",
+    "copyLink": "Copy Link",
+    "linkCopied": "Link copied!"
   },
   "wifi": {
     "ssid": "Network Name (SSID)",

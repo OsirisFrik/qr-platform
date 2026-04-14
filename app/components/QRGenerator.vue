@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { track } from '@vercel/analytics'
-import { RotateCcw, Type, Wifi } from 'lucide-vue-next'
+import { Link, MessageCircle, RotateCcw, Type, Wifi } from 'lucide-vue-next'
+import { toast } from 'vue-sonner'
 import { useQRCode } from '~/composables/useQRCode'
 import { useQRHistory, type QRHistoryItem } from '~/composables/useQRHistory'
 
@@ -15,23 +16,32 @@ const {
 } = useQRCode()
 
 const { addToHistory } = useQRHistory()
+const { t } = useI18n()
 
 const showOptions = ref(false)
-const mode = ref<'text' | 'wifi'>('text')
+const mode = ref<'text' | 'wifi' | 'whatsapp'>('text')
 const wifiText = ref('')
+const whatsappText = ref('')
 
-const activeText = computed(() =>
-  mode.value === 'wifi' ? wifiText.value : text.value
-)
+const activeText = computed(() => {
+  if (mode.value === 'wifi') return wifiText.value
+  if (mode.value === 'whatsapp') return whatsappText.value
+  return text.value
+})
 
 watch(mode, () => {
   reset()
   wifiText.value = ''
+  whatsappText.value = ''
   showOptions.value = false
 })
 
 watch(wifiText, (val) => {
   if (mode.value === 'wifi') text.value = val
+})
+
+watch(whatsappText, (val) => {
+  if (mode.value === 'whatsapp') text.value = val
 })
 
 const handleDownload = async () => {
@@ -52,6 +62,10 @@ const handleRestore = (item: QRHistoryItem) => {
     mode.value = 'wifi'
     wifiText.value = item.text
     text.value = item.text
+  } else if (item.text.startsWith('https://wa.me/')) {
+    mode.value = 'whatsapp'
+    whatsappText.value = item.text
+    text.value = item.text
   } else {
     mode.value = 'text'
     text.value = item.text
@@ -59,9 +73,13 @@ const handleRestore = (item: QRHistoryItem) => {
   options.value = { ...item.options }
 }
 
-const hasContent = computed(() =>
-  mode.value === 'wifi' ? !!wifiText.value : !!text.value
-)
+const hasContent = computed(() => !!activeText.value)
+
+const copyLink = async () => {
+  await navigator.clipboard.writeText(whatsappText.value)
+  toast.success(t('whatsapp.linkCopied'))
+  track('qr:whatsapp:copy-link')
+}
 </script>
 
 <template>
@@ -107,6 +125,20 @@ const hasContent = computed(() =>
           <Wifi class="h-4 w-4" />
           {{ $t('mode.wifi') }}
         </Button>
+        <ButtonGroupSeparator />
+        <Button
+          :variant="mode === 'whatsapp' ? 'default' : 'outline'"
+          class="flex-1"
+          @click="
+            () => {
+              mode = 'whatsapp'
+              track('qr:mode:whatsapp')
+            }
+          "
+        >
+          <MessageCircle class="h-4 w-4" />
+          {{ $t('mode.whatsapp') }}
+        </Button>
       </ButtonGroup>
 
       <!-- Input by mode -->
@@ -120,7 +152,8 @@ const hasContent = computed(() =>
         mode="out-in"
       >
         <QRInput v-if="mode === 'text'" v-model="text" />
-        <QRWifiInput v-else v-model="wifiText" />
+        <QRWifiInput v-else-if="mode === 'wifi'" v-model="wifiText" />
+        <QRWhatsAppInput v-else v-model="whatsappText" />
       </Transition>
 
       <QRPreview
@@ -129,6 +162,17 @@ const hasContent = computed(() =>
         @download="handleDownload"
         @copy="handleCopy"
       />
+
+      <!-- Copy Link (only for whatsapp mode) -->
+      <Button
+        v-if="mode === 'whatsapp' && whatsappText"
+        variant="outline"
+        class="w-full"
+        @click="copyLink"
+      >
+        <Link class="h-4 w-4" />
+        {{ $t('whatsapp.copyLink') }}
+      </Button>
 
       <!-- Options Toggle (only for text mode) -->
       <Button

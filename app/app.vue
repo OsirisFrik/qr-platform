@@ -1,5 +1,8 @@
 <script lang="ts" setup>
 import { useDark } from '@vueuse/core'
+import { Toaster } from 'vue-sonner'
+
+import 'vue-sonner/style.css'
 
 useSeoMeta({
   title: $t('title'),
@@ -14,5 +17,6 @@ useSeoMeta({
 useDark()
 </script>
 <template>
+  <Toaster />
   <NuxtPage />
 </template>

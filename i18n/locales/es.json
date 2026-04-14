@@ -27,7 +27,18 @@
   },
   "mode": {
     "text": "Texto / URL",
-    "wifi": "WiFi"
+    "wifi": "WiFi",
+    "whatsapp": "WhatsApp"
+  },
+  "whatsapp": {
+    "phone": "Número de teléfono",
+    "phonePlaceholder": "+52 55 0000 0000",
+    "phoneHint": "Incluye el código de país (ej. +52 para México, +1 para EE.UU.)",
+    "message": "Mensaje predefinido",
+    "messagePlaceholder": "¡Hola! Me gustaría ponerme en contacto...",
+    "messageHint": "Opcional. El destinatario verá este mensaje listo para enviar al abrir el chat.",
+    "copyLink": "Copiar enlace",
+    "linkCopied": "¡Enlace copiado!"
   },
   "wifi": {
     "ssid": "Nombre de red (SSID)",
