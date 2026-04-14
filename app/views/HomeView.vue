@@ -5,6 +5,7 @@
     <QRGenerator />
     <div class="fixed top-6 right-6 flex items-center gap-2">
       <GitHubStars />
+      <BuyMeACoffee />
       <LanguageSwitcher />
       <ThemeToggle />
     </div>

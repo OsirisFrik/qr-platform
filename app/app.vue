@@ -7,7 +7,7 @@ useSeoMeta({
   description: $t('subtitle'),
   ogDescription: $t('subtitle'),
   ogImage: '/thumbnail.png',
-  ogImageHeight: 150,
+  ogImageHeight: 300,
   ogImageWidth: 300
 })
 
