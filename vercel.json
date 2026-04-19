@@ -4,11 +4,6 @@
   "installCommand": "pnpm install",
   "framework": "astro",
   "outputDirectory": "dist",
-  "env": {
-    "ASTRO_TELEMETRY_DISABLED": {
-      "value": "1"
-    }
-  },
   "headers": [
     {
       "source": "/(.*)",
