@@ -8,6 +8,7 @@ export interface QROptions {
   backgroundColor: string
   errorCorrection: 'L' | 'M' | 'Q' | 'H'
   logo: string | null
+  dotStyle: 'square' | 'dot' | 'rounded'
 }
 
 const defaultOptions: QROptions = {
@@ -15,8 +16,70 @@ const defaultOptions: QROptions = {
   color: '#000000',
   backgroundColor: '#FFFFFF',
   errorCorrection: 'M',
-  logo: null
+  logo: null,
+  dotStyle: 'square'
 }
+
+const renderQRToCanvas = (
+  text: string,
+  opts: QROptions
+): Promise<string> =>
+  new Promise((resolve, reject) => {
+    try {
+      const qr = QRCode.create(text, {
+        errorCorrectionLevel: opts.errorCorrection
+      })
+      const modules = qr.modules
+      const matrixSize = modules.size
+      const margin = 2
+      const moduleSize = Math.floor(opts.size / (matrixSize + margin * 2))
+      const totalSize = (matrixSize + margin * 2) * moduleSize
+
+      const canvas = document.createElement('canvas')
+      canvas.width = totalSize
+      canvas.height = totalSize
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return reject(new Error('Canvas not available'))
+
+      ctx.fillStyle = opts.backgroundColor
+      ctx.fillRect(0, 0, totalSize, totalSize)
+
+      ctx.fillStyle = opts.color
+
+      for (let row = 0; row < matrixSize; row++) {
+        for (let col = 0; col < matrixSize; col++) {
+          const idx = row * matrixSize + col
+          if (!modules.data[idx]) continue
+
+          const x = (col + margin) * moduleSize
+          const y = (row + margin) * moduleSize
+
+          if (opts.dotStyle === 'dot') {
+            ctx.beginPath()
+            ctx.arc(
+              x + moduleSize / 2,
+              y + moduleSize / 2,
+              moduleSize * 0.45,
+              0,
+              Math.PI * 2
+            )
+            ctx.fill()
+          } else if (opts.dotStyle === 'rounded') {
+            const r = moduleSize * 0.35
+            ctx.beginPath()
+            ctx.roundRect(x, y, moduleSize, moduleSize, r)
+            ctx.fill()
+          } else {
+            ctx.fillRect(x, y, moduleSize, moduleSize)
+          }
+        }
+      }
+
+      resolve(canvas.toDataURL('image/png'))
+    } catch (error) {
+      reject(error)
+    }
+  })
 
 const compositeLogoOnQR = (
   qrSrc: string,
@@ -72,14 +135,10 @@ export const useQRCode = () => {
     try {
       isGenerating.value = true
       const hasLogo = !!options.value.logo
-      const baseDataUrl = await QRCode.toDataURL(content, {
-        width: options.value.size,
-        color: {
-          dark: options.value.color,
-          light: options.value.backgroundColor
-        },
-        errorCorrectionLevel: hasLogo ? 'H' : options.value.errorCorrection,
-        margin: 1
+      const errorCorrectionLevel = hasLogo ? 'H' : options.value.errorCorrection
+      const baseDataUrl = await renderQRToCanvas(content, {
+        ...options.value,
+        errorCorrection: errorCorrectionLevel
       })
 
       if (typeof window !== 'undefined' && hasLogo && options.value.logo) {

@@ -17,7 +17,6 @@ import FieldGroup from '@/components/ui/field/FieldGroup.vue'
 import Field from '@/components/ui/field/Field.vue'
 import FieldLabel from '@/components/ui/field/FieldLabel.vue'
 import FieldDescription from '@/components/ui/field/FieldDescription.vue'
-import FieldContent from '@/components/ui/field/FieldContent.vue'
 import Input from '@/components/ui/input/Input.vue'
 import NativeSelect from '@/components/ui/native-select/NativeSelect.vue'
 import NativeSelectOption from '@/components/ui/native-select/NativeSelectOption.vue'
@@ -72,6 +71,13 @@ const logoModel = computed({
   }
 })
 
+const dotStyleModel = computed({
+  get: () => model.value.dotStyle,
+  set: (val: string) => {
+    model.value = { ...model.value, dotStyle: val as QROptions['dotStyle'] }
+  }
+})
+
 const fileInput = ref<HTMLInputElement | null>(null)
 
 const onFileChange = (e: Event) => {
@@ -103,6 +109,102 @@ const errorCorrectionLevels = [
         <Field>
           <FieldLabel>{{ t('options.size') }} ({{ model.size }}px)</FieldLabel>
           <Slider v-model="sizeModel" :min="100" :max="400" :step="10" />
+        </Field>
+
+        <!-- Dot Pattern -->
+        <Field>
+          <FieldLabel>{{ t('options.dotStyle') }}</FieldLabel>
+          <div class="flex gap-2">
+            <button
+              @click="dotStyleModel = 'square'"
+              :class="[
+                'flex-1 rounded-md border-2 p-2 transition-colors',
+                dotStyleModel === 'square'
+                  ? 'border-primary bg-primary/10'
+                  : 'border-input hover:border-primary/50'
+              ]"
+              title="Square modules"
+            >
+              <svg
+                class="mx-auto h-6 w-6"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <rect x="3" y="3" width="3" height="3" />
+                <rect x="9" y="3" width="3" height="3" />
+                <rect x="15" y="3" width="3" height="3" />
+                <rect x="3" y="9" width="3" height="3" />
+                <rect x="9" y="9" width="3" height="3" />
+                <rect x="15" y="9" width="3" height="3" />
+                <rect x="3" y="15" width="3" height="3" />
+                <rect x="9" y="15" width="3" height="3" />
+                <rect x="15" y="15" width="3" height="3" />
+              </svg>
+              <div class="text-xs font-medium">
+                {{ t('options.dotStyleSquare') }}
+              </div>
+            </button>
+
+            <button
+              @click="dotStyleModel = 'dot'"
+              :class="[
+                'flex-1 rounded-md border-2 p-2 transition-colors',
+                dotStyleModel === 'dot'
+                  ? 'border-primary bg-primary/10'
+                  : 'border-input hover:border-primary/50'
+              ]"
+              title="Circular modules"
+            >
+              <svg
+                class="mx-auto h-6 w-6"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <circle cx="4.5" cy="4.5" r="1.5" />
+                <circle cx="10.5" cy="4.5" r="1.5" />
+                <circle cx="16.5" cy="4.5" r="1.5" />
+                <circle cx="4.5" cy="10.5" r="1.5" />
+                <circle cx="10.5" cy="10.5" r="1.5" />
+                <circle cx="16.5" cy="10.5" r="1.5" />
+                <circle cx="4.5" cy="16.5" r="1.5" />
+                <circle cx="10.5" cy="16.5" r="1.5" />
+                <circle cx="16.5" cy="16.5" r="1.5" />
+              </svg>
+              <div class="text-xs font-medium">
+                {{ t('options.dotStyleDot') }}
+              </div>
+            </button>
+
+            <button
+              @click="dotStyleModel = 'rounded'"
+              :class="[
+                'flex-1 rounded-md border-2 p-2 transition-colors',
+                dotStyleModel === 'rounded'
+                  ? 'border-primary bg-primary/10'
+                  : 'border-input hover:border-primary/50'
+              ]"
+              title="Rounded modules"
+            >
+              <svg
+                class="mx-auto h-6 w-6"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <rect x="3" y="3" width="3" height="3" rx="0.7" />
+                <rect x="9" y="3" width="3" height="3" rx="0.7" />
+                <rect x="15" y="3" width="3" height="3" rx="0.7" />
+                <rect x="3" y="9" width="3" height="3" rx="0.7" />
+                <rect x="9" y="9" width="3" height="3" rx="0.7" />
+                <rect x="15" y="9" width="3" height="3" rx="0.7" />
+                <rect x="3" y="15" width="3" height="3" rx="0.7" />
+                <rect x="9" y="15" width="3" height="3" rx="0.7" />
+                <rect x="15" y="15" width="3" height="3" rx="0.7" />
+              </svg>
+              <div class="text-xs font-medium">
+                {{ t('options.dotStyleRounded') }}
+              </div>
+            </button>
+          </div>
         </Field>
 
         <!-- Colors -->
