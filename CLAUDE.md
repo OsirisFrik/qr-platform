@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**QR Platform** is a Vue 3/Nuxt 4 web application for generating QR codes with a focus on simplicity and intuitive UX. Users can generate QR codes for URLs, text, WiFi networks, and other formats without complex workflows.
+**QR Platform** is a web application for generating QR codes with a focus on simplicity and intuitive UX. Users can generate QR codes for URLs, text, WiFi networks, and WhatsApp contacts without complex workflows.
 
-Current focus: Build a simple, intuitive QR code generator with real-time preview and download capability. Authentication and dashboard features are deferred.
+**Current state**: Migrated from Nuxt 4 to Astro with Vue 3 components. Running on Astro's static generation with Vue island hydration.
 
 ## Development Commands
 
@@ -17,228 +17,259 @@ pnpm install
 # Start dev server (http://localhost:3000)
 pnpm dev
 
-# Build for production
+# Build for production (generates static site in dist/)
 pnpm build
 
 # Preview production build locally
 pnpm preview
 
-# Generate static site (if applicable)
-pnpm generate
-
-# Add shadcn components
-pnpm shad add [component-name]
-
 # Format code with Prettier
-pnpm format
-
-# Check code formatting without changes
-pnpm format --check
+pnpm prettier
 ```
 
 ## Tech Stack
 
-- **Framework**: Nuxt 4 (Vue 3 with universal SSR rendering)
-- **Styling**: Tailwind CSS v4 + shadcn-nuxt (Vue port of shadcn/ui)
-- **QR Generation**: `qrcode` library
-- **UI Icons**: lucide-vue-next
-- **Notifications**: vue-sonner (toast/notification system)
-- **Internationalization**: @nuxtjs/i18n (en, es locales)
-- **State Management**: Vue composables + useState (Nuxt built-in)
+- **Framework**: Astro 6 (static SSG with Vue 3 island components)
+- **UI Components**: Vue 3 + Reka UI (headless component library)
+- **Styling**: Tailwind CSS v4 (via `@tailwindcss/vite` plugin)
+- **QR Generation**: `qrcode` npm package
+- **Icons**: lucide-vue-next
+- **Notifications**: vue-sonner (toast notifications)
+- **Internationalization**: i18next-vue (en, es locales)
+- **Routing**: Vue Router (for client-side navigation)
 - **Analytics**: @vercel/analytics, @vercel/speed-insights
-- **Code Formatting**: Prettier with import sorting and Tailwind class organization
+- **Code Quality**: Prettier with import/class sorting
 
 ## Architecture & Code Organization
 
-### Core QR Generation Flow
+### QR Generation Flow
 
-The QR generator is centered around the **index page** with a modular component architecture:
+Entry point is **src/pages/index.astro** which renders **HomeView.vue** with `client:load` hydration.
 
-1. **Input Layer** (`QRInput.vue`, `QRWifiInput.vue`): Captures user input (URL, text, WiFi credentials)
-2. **Options Layer** (`QROptions.vue`): Provides customization (error correction level, size, colors)
-3. **Preview Layer** (`QRPreview.vue`): Real-time QR code rendering using the `qrcode` library
-4. **History Layer** (`QRHistory.vue`): Stores recently generated QR codes in component state
-5. **Type Selection** (`QRTypeSelector.vue`): Allows users to choose QR type (URL, text, WiFi)
+**HomeView.vue** layout orchestrates:
+- **QRGenerator.vue**: Main component managing state, mode switching (text/wifi/whatsapp)
+- **QRInput.vue**: Text/URL input form
+- **QRWifiInput.vue**: WiFi credential input
+- **QRWhatsAppInput.vue**: WhatsApp contact sharing input
+- **QRPreview.vue**: Canvas-based QR display with download
+- **QRHistory.vue**: Browser localStorage history panel
+- **QROptions.vue**: Customization controls (error correction, size, colors)
 
-**Key Composable**: `QRGenerator.vue` orchestrates the entire flow, managing:
-
-- Input state across different QR types
-- Preview updates as users type
-- History management
-- Download functionality
+Supporting components:
+- **ThemeToggle.vue**: Dark/light mode toggle
+- **LanguageSwitcher.vue**: Locale switcher (en/es)
+- **GitHubStars.vue**, **BuyMeACoffee.vue**: External links
 
 ### Directory Structure
 
 ```
-app/
+src/
 ├── pages/
-│   ├── index.vue       # Main QR generator page (primary feature)
-│   ├── login.vue       # Placeholder (not in use)
-│   └── sign-up.vue     # Placeholder (not in use)
+│   └── index.astro          # Entry point, hydrates HomeView.vue
+├── layouts/
+│   └── Layout.astro         # Base Astro layout (head, body wrapper)
 ├── components/
-│   ├── QRGenerator.vue      # Main orchestrator component
-│   ├── QRInput.vue          # Text/URL input form
-│   ├── QRWifiInput.vue      # WiFi credential input form
-│   ├── QROptions.vue        # QR customization options
-│   ├── QRPreview.vue        # QR code canvas display
-│   ├── QRHistory.vue        # History of generated QRs
-│   ├── QRTypeSelector.vue   # QR type selector (URL, text, WiFi, etc.)
-│   ├── GitHubStars.vue      # Repository link component
-│   ├── LanguageSwitcher.vue # i18n locale switcher
-│   ├── ui/                  # shadcn-nuxt components (auto-imported)
-│   ├── forms/               # Form components (placeholder)
-│   └── layouts/             # Layout components
-├── composables/             # Reusable Vue composition functions (auto-imported)
-├── utils/
-│   └── shadUtils.ts         # shadcn component utility functions
+│   ├── HomeView.vue         # Main view (hydrated island)
+│   ├── QRGenerator.vue      # QR orchestrator & state manager
+│   ├── QRInput.vue          # Text/URL input
+│   ├── QRWifiInput.vue      # WiFi input
+│   ├── QRWhatsAppInput.vue  # WhatsApp input
+│   ├── QRPreview.vue        # Canvas QR display + download
+│   ├── QROptions.vue        # Customization options
+│   ├── QRHistory.vue        # History panel
+│   ├── LanguageSwitcher.vue
+│   ├── GitHubStars.vue
+│   ├── BuyMeACoffee.vue
+│   └── ui/                  # Reka UI component library
+│       ├── button/
+│       ├── card/
+│       ├── field/
+│       ├── select/
+│       ├── textarea/
+│       ├── slider/
+│       └── ... (other UI components)
+├── composables/
+│   ├── useQRCode.ts         # QR generation logic (returns reactive state)
+│   └── useQRHistory.ts      # LocalStorage-based history management
+├── i18n/
+│   ├── index.ts             # i18next-vue setup and useI18n() composable
+│   └── locales/
+│       ├── en.json
+│       └── es.json
 ├── assets/
 │   └── css/
-│       └── tailwind.css     # Global styles and Tailwind v4 setup
-└── views/                   # Page-level view components (used by pages/)
-
-types/                        # TypeScript type definitions
-i18n/                         # Translation files
-├── locales/
-│   ├── en.json             # English translations
-│   └── es.json             # Spanish translations
+│       └── tailwind.css     # Global styles, Tailwind directives
+└── styles/
+    └── ... (additional CSS if needed)
 ```
+
+### State Management
+
+**Reactive state** via Vue composition API composables (no external state library):
+
+- **useQRCode()**: Manages text input, QR options, generation state, download
+  - Returns: `text`, `options`, `qrDataUrl`, `isGenerating`, `downloadQR()`, `copyToClipboard()`, `reset()`
+  - Triggers on text changes → generates QR canvas data → canvas-to-dataURL conversion
+  
+- **useQRHistory()**: Manages localStorage history
+  - Returns: `history`, `addToHistory()`, `clearHistory()`
+  - Persistent storage key: `qr-history`
+
+QRGenerator.vue watches mode changes and syncs active input to `text` ref for preview.
 
 ### Key Patterns
 
-#### QR Generation with the `qrcode` Library
+#### QR Code Generation
 
-The app uses the `qrcode` npm package for QR generation. The `QRPreview.vue` component:
+```vue
+<script setup>
+import QRCode from 'qrcode'
+import { useQRCode } from '@/composables/useQRCode'
 
-- Takes input text/URL via props
-- Renders QR code to canvas using `qrcode.toCanvas()`
-- Supports customization options (error correction, size, colors)
-- Provides download functionality via `canvas.toBlob()`
+const { text, options, qrDataUrl, downloadQR } = useQRCode()
 
-#### Styling
+// In composable:
+// QRCode.toCanvas(canvas, text, options) → canvas.toDataURL()
+</script>
+```
 
-- Tailwind v4 with `@tailwindcss/vite` plugin
-- shadcn components auto-imported (no manual imports required)
-- Use `pnpm shad add [component-name]` to add new UI components
-- Icons from lucide-vue-next (configured in `components.json` with alias `lucide`)
-- **Important**: Prettier auto-organizes Tailwind classes when formatting
+- Uses `qrcode` library's `toCanvas()` API
+- Supports options: `errorCorrectionLevel` (L/M/Q/H), `width`, `color` (dark/light)
+- Canvas converted to DataURL for preview/download
+
+#### Astro → Vue Hydration
+
+```astro
+---
+import HomeView from '../components/HomeView.vue'
+---
+
+<Layout>
+  <HomeView client:load />
+</Layout>
+```
+
+`client:load` hydrates the component immediately. Other directives: `client:idle`, `client:visible`.
 
 #### Internationalization
 
-- Locales: `en` (English), `es` (Español)
-- Translation files in `i18n/locales/` as JSON files (not TypeScript)
-- Use `useI18n()` composable in components to access translations
-- Strategy: `no_prefix` (no URL prefix for locale selection)
+```vue
+<script setup>
+import { useI18n } from '@/i18n'
 
-#### Component Library
+const { t, locale } = useI18n()
+</script>
 
-- shadcn-nuxt components auto-imported (no manual imports needed)
-- All UI components live in `app/components/ui/`
-- Add new components with: `pnpm shad add [component-name]`
-- New components being developed: `textarea` and `slider` (already added to UI directory)
+<template>
+  <h1>{{ t('title') }}</h1>
+</template>
+```
 
-#### Component Aliases
+Translations in `src/i18n/locales/{en,es}.json`. Keys accessed via `t('key.nested')`.
 
-Defined in `components.json` for cleaner imports:
+#### Styling
 
-- `@/components` → components directory
-- `@/components/ui` → shadcn UI components
-- `@/utils/shadUtils` → shadcn utility functions
-- `@/composables` → composition functions
+- Tailwind v4 configured via `@tailwindcss/vite` in `astro.config.mjs`
+- Prettier plugin auto-sorts Tailwind classes
+- Dark mode via `<html class="dark">` (already set in Layout.astro)
+- Reka UI components reference CSS variables; update `src/assets/css/tailwind.css` for theming
 
-#### Dark Mode
+#### Component Imports
 
-The app is configured for dark mode by default:
+Explicit imports required (no auto-import in Astro):
 
-- `<html class="dark">` set in `nuxt.config.ts`
-- All shadcn components use dark theme CSS variables
-- If adding theme switching, use a `ThemeProvider` component pattern
+```vue
+<script setup>
+import Button from '@/components/ui/button/Button.vue'
+import { useQRCode } from '@/composables/useQRCode'
+</script>
+```
 
-#### Code Formatting
+Vite alias `@` resolves to `src/`.
 
-Prettier is configured with:
+### Mode & Input Handling
 
-- Import sorting: 3rd party → `@/` aliases → relative imports
-- Tailwind class sorting (via `prettier-plugin-tailwindcss`)
-- 80-character line width
-- 2-space indentation
-- Single quotes, no semicolons, trailing commas off
+**QRGenerator.vue** manages a `mode` ref (text/wifi/whatsapp):
 
-Run `pnpm format` before committing to maintain consistency.
+```typescript
+const mode = ref<'text' | 'wifi' | 'whatsapp'>('text')
+const wifiText = ref('')
+const whatsappText = ref('')
 
-## Important Configuration Files
+const activeText = computed(() => {
+  if (mode.value === 'wifi') return wifiText.value
+  if (mode.value === 'whatsapp') return whatsappText.value
+  return text.value
+})
 
-- **nuxt.config.ts**: Framework modules (shadcn, i18n), Tailwind Vite plugin, app head metadata, SSR configuration
-- **components.json**: shadcn component registry, icon library config, component aliases
-- **package.json**: Scripts, dependencies, and pnpm workspace configuration
-- **.prettierrc**: Code formatting rules with import and Tailwind class sorting
-- **tsconfig.json**: TypeScript references to Nuxt-generated configs
+watch(mode, () => {
+  reset() // clear inputs and preview when switching
+})
+```
+
+Each input component (`QRInput`, `QRWifiInput`, `QRWhatsAppInput`) updates its respective ref, which syncs to `text` for QR generation.
+
+## Configuration Files
+
+- **astro.config.mjs**: Astro setup, Vue integration, Tailwind Vite plugin, path alias (`@`)
+- **.prettierrc**: Import sorting, Tailwind class sorting, 80 char line width
+- **package.json**: Scripts (dev/build/preview), dependencies
+- **tsconfig.json**: TypeScript config
 
 ## Design Principles
 
-Keep the QR generator simple and fast:
-
-- Minimize form fields (input + optional customization only)
-- Real-time QR preview as users type
-- One-click download with descriptive filenames
-- Mobile-friendly responsive interface
-- No unnecessary redirects or authentication flows
-- Support multiple QR types (URL, text, WiFi) via type selector
-
-## UI Component Rules
-
-- High priority to use existing components in `app/components/ui/`
-- Use `defineProps` as a constant for component configuration
-- Use `v-model` for inputs and selects (not `:value` or `v-model:modelValue`)
-- Prefer `defineEmits` as a constant for event definitions
-- Avoid `@update` event handlers when `v-model` is available
-- Use `useVModel` for `v-model` composition
-
-## Untracked Components in Development
-
-These components are in git status as untracked (new features being added):
-
-- `QRTypeSelector.vue` — Selector for QR code type (URL, text, WiFi, vCard, etc.)
-- `QRWhatsAppInput.vue` — Specialized input for WhatsApp contact sharing
-- `ui/slider/` — New slider component for QR customization options
-- `ui/textarea/` — New textarea component for longer text inputs
+- **Minimal, fast UX**: Few form fields, real-time preview
+- **Mobile-first**: Responsive design via Tailwind
+- **Extensible**: Easy to add new QR modes (create input component → update QRGenerator mode logic)
+- **Accessible**: Semantic HTML, ARIA labels (use Reka UI components which handle a11y)
 
 ## Common Tasks
 
-### Creating a New QR Input Type
+### Adding a New QR Input Type
 
-1. Create a new input component in `app/components/` (e.g., `QREmailInput.vue`)
-2. Export the input handler function and TypeScript interface
-3. Update `QRTypeSelector.vue` to include the new type
-4. Update `QRGenerator.vue` to handle the new type in the input/preview logic
-5. Add translations for the new type to `i18n/locales/{en,es}.json`
+1. Create `src/components/QRNewInput.vue` (follow `QRWifiInput.vue` structure)
+2. In `QRGenerator.vue`:
+   - Add mode to type: `'text' | 'wifi' | 'whatsapp' | 'newinput'`
+   - Add state ref: `const newInputText = ref('')`
+   - Add computed `activeText` case
+   - Add watch to sync input to `text`
+3. Add UI button in QRGenerator template to switch mode
+4. Add translations to `i18n/locales/{en,es}.json`
 
-### Adding a shadcn Component
+### Adding a UI Component from Reka UI
+
+Reka UI is already integrated. Import from `src/components/ui/` and use directly—no CLI needed.
+
+Example: Button, Card, Select, etc. are ready to use.
+
+### Formatting Before Commit
 
 ```bash
-pnpm shad add [component-name]
+pnpm prettier
 ```
 
-Components are auto-imported; no manual setup needed.
+Prettier will:
+- Sort imports (3rd party → @/ → relative)
+- Sort Tailwind classes
+- Fix formatting
 
-### Adding Translations
+## Deployment
 
-1. Add keys to `i18n/locales/en.json` and `i18n/locales/es.json`
-2. Use `const { t } = useI18n()` in components to access: `t('key')`
+Built static site in `dist/` after `pnpm build`. Deploy to Vercel:
+- Analytics & Speed Insights enabled
+- No server required (static SSG)
+- Instant cold starts
 
-### Downloading QR Codes
+## Development Notes
 
-The `QRPreview.vue` component provides download via:
+**Astro-specific gotchas**:
+- Components in `.astro` files can't use Vue reactivity directly—use `.vue` files with `client:*` for interactivity
+- `import.meta.env` for environment variables (Astro-style)
+- Styles in `.astro` are scoped by default; use `is:global` if needed
 
-1. Reference to canvas element
-2. Use `canvas.toBlob()` to get image data
-3. Trigger download using `URL.createObjectURL()` and anchor click
-
-## Deployment Notes
-
-- **Vercel Analytics** enabled for tracking page views and user behavior
-- **Vercel Speed Insights** enabled for Web Vitals monitoring
-- Static generation not typically needed (SSR provides dynamic content)
-- Environment: Check `nuxt.config.ts` `compatibilityDate` for Node.js version compatibility
+**File extensions**:
+- `.astro` for pages/layouts (server-side, static generation)
+- `.vue` for interactive components (hydrated as islands)
 
 ---
 

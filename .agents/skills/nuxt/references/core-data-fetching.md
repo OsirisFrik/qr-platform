@@ -46,7 +46,7 @@ const { data } = await useFetch('/api/posts', {
   // Only pick specific fields
   pick: ['id', 'title'],
   // Transform response
-  transform: (posts) => posts.map(p => ({ ...p, slug: slugify(p.title) })),
+  transform: (posts) => posts.map((p) => ({ ...p, slug: slugify(p.title) })),
   // Custom key for caching
   key: 'posts-list',
   // Don't fetch on server
@@ -56,7 +56,7 @@ const { data } = await useFetch('/api/posts', {
   // Don't fetch immediately
   immediate: false,
   // Default value
-  default: () => [],
+  default: () => []
 })
 ```
 
@@ -66,7 +66,7 @@ const { data } = await useFetch('/api/posts', {
 <script setup lang="ts">
 const page = ref(1)
 const { data } = await useFetch('/api/posts', {
-  query: { page }, // Automatically refetches when page changes
+  query: { page } // Automatically refetches when page changes
 })
 </script>
 ```
@@ -100,7 +100,7 @@ const { data, error } = await useAsyncData('user', () => {
 const { data } = await useAsyncData('cart', async () => {
   const [coupons, offers] = await Promise.all([
     $fetch('/api/coupons'),
-    $fetch('/api/offers'),
+    $fetch('/api/offers')
   ])
   return { coupons, offers }
 })
@@ -116,7 +116,7 @@ For client-side events (form submissions, button clicks):
 async function submitForm() {
   const result = await $fetch('/api/submit', {
     method: 'POST',
-    body: { name: 'John' },
+    body: { name: 'John' }
   })
 }
 </script>
@@ -128,14 +128,14 @@ async function submitForm() {
 
 All composables return:
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `data` | `Ref<T>` | Fetched data |
-| `error` | `Ref<Error>` | Error if request failed |
-| `status` | `Ref<'idle' \| 'pending' \| 'success' \| 'error'>` | Request status |
-| `refresh` | `() => Promise` | Refetch data |
-| `execute` | `() => Promise` | Alias for refresh |
-| `clear` | `() => void` | Reset data and error |
+| Property  | Type                                               | Description             |
+| --------- | -------------------------------------------------- | ----------------------- |
+| `data`    | `Ref<T>`                                           | Fetched data            |
+| `error`   | `Ref<Error>`                                       | Error if request failed |
+| `status`  | `Ref<'idle' \| 'pending' \| 'success' \| 'error'>` | Request status          |
+| `refresh` | `() => Promise`                                    | Refetch data            |
+| `execute` | `() => Promise`                                    | Alias for refresh       |
+| `clear`   | `() => void`                                       | Reset data and error    |
 
 ## Lazy Fetching
 
@@ -161,7 +161,7 @@ const category = ref('tech')
 const { data, refresh } = await useFetch('/api/posts', {
   query: { category },
   // Auto-refresh when category changes
-  watch: [category],
+  watch: [category]
 })
 
 // Manual refresh
@@ -213,7 +213,7 @@ const { data } = await useFetch('/api/auth', {
     if (response.status === 401) {
       navigateTo('/login')
     }
-  },
+  }
 })
 ```
 
@@ -228,7 +228,7 @@ const data = await $fetch('/api/user', { headers })
 </script>
 ```
 
-<!-- 
+<!--
 Source references:
 - https://nuxt.com/docs/getting-started/data-fetching
 - https://nuxt.com/docs/api/composables/use-fetch

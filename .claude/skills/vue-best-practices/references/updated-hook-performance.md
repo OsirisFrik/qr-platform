@@ -22,6 +22,7 @@ Use `updated`/`onUpdated` sparingly for post-DOM-update operations that cannot b
 - Reserve updated for low-level DOM synchronization tasks
 
 **BAD:**
+
 ```javascript
 // BAD: API call in updated - fires on every re-render
 export default {
@@ -63,6 +64,7 @@ export default {
 ```
 
 **GOOD:**
+
 ```javascript
 import debounce from 'lodash-es/debounce'
 
@@ -81,7 +83,7 @@ export default {
     }
   },
   methods: {
-    syncToServer: debounce(function(items) {
+    syncToServer: debounce(function (items) {
       fetch('/api/sync', {
         method: 'POST',
         body: JSON.stringify(items)
@@ -101,9 +103,13 @@ const items = ref([])
 const scrollContainer = ref(null)
 
 // Watch specific data - not all updates
-watch(items, (newItems) => {
-  syncToServer(newItems)
-}, { deep: true })
+watch(
+  items,
+  (newItems) => {
+    syncToServer(newItems)
+  },
+  { deep: true }
+)
 
 const syncToServer = useDebounceFn((items) => {
   fetch('/api/sync', { method: 'POST', body: JSON.stringify(items) })
@@ -136,7 +142,7 @@ export default {
     }
   },
   methods: {
-    syncContent: debounce(function() {
+    syncContent: debounce(function () {
       // Sync logic
     }, 300)
   }

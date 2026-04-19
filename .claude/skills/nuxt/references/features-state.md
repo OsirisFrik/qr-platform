@@ -104,13 +104,13 @@ npx nuxi module add pinia
 // stores/counter.ts
 export const useCounterStore = defineStore('counter', {
   state: () => ({
-    count: 0,
+    count: 0
   }),
   actions: {
     increment() {
       this.count++
-    },
-  },
+    }
+  }
 })
 ```
 
@@ -123,7 +123,7 @@ export const useUserStore = defineStore('user', () => {
   async function login(credentials: Credentials) {
     user.value = await $fetch('/api/login', {
       method: 'POST',
-      body: credentials,
+      body: credentials
     })
   }
 
@@ -157,8 +157,7 @@ export function useDefaultLocale(fallback = 'en-US') {
   if (import.meta.server) {
     const reqLocale = useRequestHeaders()['accept-language']?.split(',')[0]
     if (reqLocale) locale.value = reqLocale
-  }
-  else if (import.meta.client) {
+  } else if (import.meta.client) {
     const navLang = navigator.language
     if (navLang) locale.value = navLang
   }
@@ -186,7 +185,7 @@ useState('data', () => ({ name: 'John', age: 30 }))
 useState('items', () => ['a', 'b', 'c'])
 ```
 
-<!-- 
+<!--
 Source references:
 - https://nuxt.com/docs/getting-started/state-management
 - https://nuxt.com/docs/api/composables/use-state

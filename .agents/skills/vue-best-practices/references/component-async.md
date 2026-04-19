@@ -22,6 +22,7 @@ tags: [vue3, async-components, ssr, hydration, performance, ux]
 In Vue 3.5+, async components can delay hydration until idle time, visibility, media query match, or user interaction.
 
 **BAD:**
+
 ```vue
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue'
@@ -33,13 +34,10 @@ const AsyncComments = defineAsyncComponent({
 ```
 
 **GOOD:**
+
 ```vue
 <script setup lang="ts">
-import {
-  defineAsyncComponent,
-  hydrateOnVisible,
-  hydrateOnIdle
-} from 'vue'
+import { defineAsyncComponent, hydrateOnVisible, hydrateOnIdle } from 'vue'
 
 const AsyncComments = defineAsyncComponent({
   loader: () => import('./Comments.vue'),
@@ -58,6 +56,7 @@ const AsyncFooter = defineAsyncComponent({
 Avoid showing loading UI immediately for components that usually resolve quickly.
 
 **BAD:**
+
 ```vue
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue'
@@ -72,6 +71,7 @@ const AsyncDashboard = defineAsyncComponent({
 ```
 
 **GOOD:**
+
 ```vue
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue'
@@ -90,8 +90,8 @@ const AsyncDashboard = defineAsyncComponent({
 
 ## Delay Guidelines
 
-| Scenario | Recommended Delay |
-|----------|-------------------|
-| Small component, fast network | `200ms` |
-| Known heavy component | `100ms` |
-| Background or non-critical UI | `300-500ms` |
+| Scenario                      | Recommended Delay |
+| ----------------------------- | ----------------- |
+| Small component, fast network | `200ms`           |
+| Known heavy component         | `100ms`           |
+| Background or non-critical UI | `300-500ms`       |

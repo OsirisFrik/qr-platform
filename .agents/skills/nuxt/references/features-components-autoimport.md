@@ -52,13 +52,14 @@ export default defineNuxtConfig({
   components: [
     {
       path: '~/components',
-      pathPrefix: false, // Use filename only
-    },
-  ],
+      pathPrefix: false // Use filename only
+    }
+  ]
 })
 ```
 
 With `pathPrefix: false`:
+
 ```
 components/base/Button.vue → <Button />
 ```
@@ -80,6 +81,7 @@ const showChart = ref(false)
 ```
 
 Benefits:
+
 - Reduces initial bundle size
 - Code-splits component into separate chunk
 - Loads on-demand
@@ -216,8 +218,8 @@ Requires experimental flag:
 // nuxt.config.ts
 export default defineNuxtConfig({
   experimental: {
-    componentIslands: true,
-  },
+    componentIslands: true
+  }
 })
 ```
 
@@ -264,8 +266,8 @@ export default defineNuxtConfig({
   components: [
     { path: '~/components/ui', prefix: 'Ui' },
     { path: '~/components/forms', prefix: 'Form' },
-    '~/components', // Default, should come last
-  ],
+    '~/components' // Default, should come last
+  ]
 })
 ```
 
@@ -278,8 +280,8 @@ Register globally (creates async chunks):
 export default defineNuxtConfig({
   components: {
     global: true,
-    dirs: ['~/components'],
-  },
+    dirs: ['~/components']
+  }
 })
 ```
 
@@ -296,8 +298,8 @@ components/
 // nuxt.config.ts
 export default defineNuxtConfig({
   components: {
-    dirs: [], // Disable auto-imports
-  },
+    dirs: [] // Disable auto-imports
+  }
 })
 ```
 
@@ -315,13 +317,13 @@ export default defineNuxtModule({
 
     addComponentsDir({
       path: resolver.resolve('./components'),
-      prefix: 'MyUi',
+      prefix: 'MyUi'
     })
-  },
+  }
 })
 ```
 
-<!-- 
+<!--
 Source references:
 - https://nuxt.com/docs/directory-structure/app/components
 - https://nuxt.com/docs/guide/concepts/auto-imports#auto-imported-components

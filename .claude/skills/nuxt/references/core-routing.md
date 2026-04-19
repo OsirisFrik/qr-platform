@@ -91,7 +91,7 @@ Apply to pages:
 ```vue
 <script setup lang="ts">
 definePageMeta({
-  middleware: 'auth',
+  middleware: 'auth'
   // or multiple: middleware: ['auth', 'admin']
 })
 </script>
@@ -116,8 +116,8 @@ definePageMeta({
   middleware: [
     function (to, from) {
       // Inline middleware logic
-    },
-  ],
+    }
+  ]
 })
 </script>
 ```
@@ -135,7 +135,7 @@ definePageMeta({
   validate: (route) => {
     // Return false for 404, or object with status/statusText
     return /^\d+$/.test(route.params.id as string)
-  },
+  }
 })
 </script>
 ```
@@ -148,7 +148,7 @@ definePageMeta({
   validate: (route) => {
     // Must return boolean or object with status
     return typeof route.params.id === 'string' && /^\d+$/.test(route.params.id)
-  },
+  }
 })
 </script>
 ```
@@ -185,7 +185,7 @@ Use in pages:
 ```vue
 <script setup lang="ts">
 definePageMeta({
-  layout: 'admin',
+  layout: 'admin'
 })
 </script>
 ```
@@ -218,7 +218,7 @@ onBeforeRouteUpdate((to, from) => {
 </script>
 ```
 
-<!-- 
+<!--
 Source references:
 - https://nuxt.com/docs/getting-started/routing
 - https://nuxt.com/docs/directory-structure/app/pages

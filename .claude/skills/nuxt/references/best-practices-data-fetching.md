@@ -9,12 +9,12 @@ Effective data fetching patterns for SSR-friendly, performant Nuxt applications.
 
 ## Choose the Right Tool
 
-| Scenario | Use |
-|----------|-----|
-| Component initial data | `useFetch` or `useAsyncData` |
-| User interactions (clicks, forms) | `$fetch` |
-| Third-party SDK/API | `useAsyncData` with custom function |
-| Multiple parallel requests | `useAsyncData` with `Promise.all` |
+| Scenario                          | Use                                 |
+| --------------------------------- | ----------------------------------- |
+| Component initial data            | `useFetch` or `useAsyncData`        |
+| User interactions (clicks, forms) | `$fetch`                            |
+| Third-party SDK/API               | `useAsyncData` with custom function |
+| Multiple parallel requests        | `useAsyncData` with `Promise.all`   |
 
 ## Await vs Non-Await Usage
 
@@ -59,11 +59,11 @@ const { data, status } = useLazyFetch('/api/posts')
 
 ### When to Use Each
 
-| Pattern | Use Case |
-|---------|----------|
-| `await useFetch()` | Critical data needed for SEO/initial render |
+| Pattern                    | Use Case                                        |
+| -------------------------- | ----------------------------------------------- |
+| `await useFetch()`         | Critical data needed for SEO/initial render     |
 | `useFetch({ lazy: true })` | Non-critical data, better perceived performance |
-| `await useLazyFetch()` | Same as lazy, await only ensures initialization |
+| `await useLazyFetch()`     | Same as lazy, await only ensures initialization |
 
 ## Avoid Double Fetching
 
@@ -101,16 +101,12 @@ const { data } = await useAsyncData(() => fetchPosts())
 ```vue
 <script setup lang="ts">
 // Explicit key for predictable caching
-const { data } = await useAsyncData(
-  'posts',
-  () => fetchPosts(),
-)
+const { data } = await useAsyncData('posts', () => fetchPosts())
 
 // Dynamic keys for parameterized data
 const route = useRoute()
-const { data: post } = await useAsyncData(
-  `post-${route.params.id}`,
-  () => fetchPost(route.params.id),
+const { data: post } = await useAsyncData(`post-${route.params.id}`, () =>
+  fetchPost(route.params.id)
 )
 </script>
 ```
@@ -146,7 +142,7 @@ const { data: post } = await useFetch(`/api/posts/${id}`)
 
 // Non-critical data - doesn't block navigation
 const { data: comments, status } = useFetch(`/api/posts/${id}/comments`, {
-  lazy: true,
+  lazy: true
 })
 
 // Or use useLazyFetch
@@ -172,7 +168,7 @@ const { data: related } = useLazyFetch(`/api/posts/${id}/related`)
 <script setup lang="ts">
 const { data } = await useFetch('/api/users', {
   // Only include these fields in payload
-  pick: ['id', 'name', 'avatar'],
+  pick: ['id', 'name', 'avatar']
 })
 </script>
 ```
@@ -183,13 +179,13 @@ const { data } = await useFetch('/api/users', {
 <script setup lang="ts">
 const { data } = await useFetch('/api/posts', {
   transform: (posts) => {
-    return posts.map(post => ({
+    return posts.map((post) => ({
       id: post.id,
       title: post.title,
       excerpt: post.content.slice(0, 100),
-      date: new Date(post.createdAt).toLocaleDateString(),
+      date: new Date(post.createdAt).toLocaleDateString()
     }))
-  },
+  }
 })
 </script>
 ```
@@ -206,10 +202,10 @@ const { data } = await useAsyncData(
     const [user, posts, stats] = await Promise.all([
       $fetch('/api/user', { signal }),
       $fetch('/api/posts', { signal }),
-      $fetch('/api/stats', { signal }),
+      $fetch('/api/stats', { signal })
     ])
     return { user, posts, stats }
-  },
+  }
 )
 </script>
 ```
@@ -221,7 +217,7 @@ const { data } = await useAsyncData(
 // These run in parallel automatically
 const [{ data: user }, { data: posts }] = await Promise.all([
   useFetch('/api/user'),
-  useFetch('/api/posts'),
+  useFetch('/api/posts')
 ])
 </script>
 ```
@@ -238,7 +234,7 @@ const category = ref('all')
 const { data } = await useFetch('/api/posts', {
   query: { page, category },
   // Auto-refresh when these change
-  watch: [page, category],
+  watch: [page, category]
 })
 </script>
 ```
@@ -262,7 +258,7 @@ async function refreshPosts() {
 const userId = ref<string | null>(null)
 
 const { data, execute } = useFetch(() => `/api/users/${userId.value}`, {
-  immediate: false, // Don't fetch until userId is set
+  immediate: false // Don't fetch until userId is set
 })
 
 // Later, when userId is available
@@ -281,7 +277,7 @@ function loadUser(id: string) {
 const { data } = await useFetch('/api/static-content', {
   server: true,
   lazy: true,
-  getCachedData: (key, nuxtApp) => nuxtApp.payload.data[key],
+  getCachedData: (key, nuxtApp) => nuxtApp.payload.data[key]
 })
 </script>
 ```
@@ -293,12 +289,16 @@ const { data } = await useFetch('/api/static-content', {
 const { data, error, refresh } = await useFetch('/api/posts')
 
 // Watch for errors if need event-like handling
-watch(error, (err) => {
-  if (err) {
-    console.error('Fetch failed:', err)
-    // Show toast, redirect, etc.
-  }
-}, { immediate: true })
+watch(
+  error,
+  (err) => {
+    if (err) {
+      console.error('Fetch failed:', err)
+      // Show toast, redirect, etc.
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
@@ -348,7 +348,7 @@ await callOnce(async () => {
 </script>
 ```
 
-<!-- 
+<!--
 Source references:
 - https://nuxt.com/docs/getting-started/data-fetching
 - https://nuxt.com/docs/api/composables/use-fetch

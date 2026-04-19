@@ -24,8 +24,8 @@ export default defineNuxtConfig({
       console.log('Inline module')
     },
     // With options
-    ['@nuxt/image', { provider: 'cloudinary' }],
-  ],
+    ['@nuxt/image', { provider: 'cloudinary' }]
+  ]
 })
 ```
 
@@ -38,16 +38,16 @@ export default defineNuxtConfig({
 export default defineNuxtModule({
   meta: {
     name: 'my-module',
-    configKey: 'myModule',
+    configKey: 'myModule'
   },
   defaults: {
-    enabled: true,
+    enabled: true
   },
   setup(options, nuxt) {
     if (!options.enabled) return
 
     console.log('My module is running!')
-  },
+  }
 })
 ```
 
@@ -64,15 +64,15 @@ export default defineNuxtModule({
     // Add single component
     addComponent({
       name: 'MyButton',
-      filePath: resolve('./runtime/components/MyButton.vue'),
+      filePath: resolve('./runtime/components/MyButton.vue')
     })
 
     // Add components directory
     addComponentsDir({
       path: resolve('./runtime/components'),
-      prefix: 'My',
+      prefix: 'My'
     })
-  },
+  }
 })
 ```
 
@@ -89,12 +89,12 @@ export default defineNuxtModule({
     // Add auto-imported composable
     addImports({
       name: 'useMyUtil',
-      from: resolve('./runtime/composables/useMyUtil'),
+      from: resolve('./runtime/composables/useMyUtil')
     })
 
     // Add directory for auto-imports
     addImportsDir(resolve('./runtime/composables'))
-  },
+  }
 })
 ```
 
@@ -110,9 +110,9 @@ export default defineNuxtModule({
 
     addPlugin({
       src: resolve('./runtime/plugin'),
-      mode: 'client', // 'client', 'server', or 'all'
+      mode: 'client' // 'client', 'server', or 'all'
     })
-  },
+  }
 })
 ```
 
@@ -139,9 +139,9 @@ export default defineNuxtModule({
 
     addServerHandler({
       route: '/api/my-endpoint',
-      handler: resolve('./runtime/server/api/my-endpoint'),
+      handler: resolve('./runtime/server/api/my-endpoint')
     })
-  },
+  }
 })
 ```
 
@@ -156,14 +156,14 @@ export default defineNuxtModule({
 
     // Add runtime config
     nuxt.options.runtimeConfig.public.myModule = {
-      apiUrl: options.apiUrl,
+      apiUrl: options.apiUrl
     }
 
     // Extend Vite config
     nuxt.options.vite.optimizeDeps ||= {}
     nuxt.options.vite.optimizeDeps.include ||= []
     nuxt.options.vite.optimizeDeps.include.push('some-package')
-  },
+  }
 })
 ```
 
@@ -185,14 +185,14 @@ export default defineNuxtModule({
       pages.push({
         name: 'custom-page',
         path: '/custom',
-        file: resolve('./runtime/pages/custom.vue'),
+        file: resolve('./runtime/pages/custom.vue')
       })
     })
 
     nuxt.hook('imports:extend', (imports) => {
       imports.push({ name: 'myHelper', from: 'my-package' })
     })
-  },
+  }
 })
 ```
 
@@ -210,18 +210,18 @@ export interface ModuleOptions {
 export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'my-module',
-    configKey: 'myModule',
+    configKey: 'myModule'
   },
   defaults: {
     enabled: true,
-    prefix: 'My',
+    prefix: 'My'
   },
   setup(options, nuxt) {
     // options is typed as ModuleOptions
     if (!options.apiKey) {
       console.warn('API key not provided')
     }
-  },
+  }
 })
 ```
 
@@ -233,8 +233,8 @@ export default defineNuxtConfig({
   modules: ['my-module'],
   myModule: {
     apiKey: 'xxx',
-    prefix: 'Custom',
-  },
+    prefix: 'Custom'
+  }
 })
 ```
 
@@ -258,8 +258,8 @@ Auto-registered or manually added:
 // nuxt.config.ts
 export default defineNuxtConfig({
   modules: [
-    '~/modules/my-module', // Explicit
-  ],
+    '~/modules/my-module' // Explicit
+  ]
 })
 ```
 
@@ -268,23 +268,23 @@ export default defineNuxtConfig({
 ```ts
 export default defineNuxtModule({
   meta: {
-    name: 'my-module',
+    name: 'my-module'
   },
   moduleDependencies: {
     '@nuxt/image': {
       version: '>=1.0.0',
       defaults: {
-        provider: 'ipx',
-      },
-    },
+        provider: 'ipx'
+      }
+    }
   },
   setup() {
     // @nuxt/image is guaranteed to be installed
-  },
+  }
 })
 ```
 
-<!-- 
+<!--
 Source references:
 - https://nuxt.com/docs/guide/modules
 - https://nuxt.com/docs/guide/modules/module-anatomy
