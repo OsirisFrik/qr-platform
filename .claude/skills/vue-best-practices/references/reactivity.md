@@ -3,7 +3,19 @@ title: Reactivity Core Patterns (ref, reactive, shallowRef, computed, watch)
 impact: MEDIUM
 impactDescription: Clear reactivity choices keep state predictable and reduce unnecessary updates in Vue 3 apps
 type: efficiency
-tags: [vue3, reactivity, ref, reactive, shallowRef, computed, watch, watchEffect, external-state, best-practice]
+tags:
+  [
+    vue3,
+    reactivity,
+    ref,
+    reactive,
+    shallowRef,
+    computed,
+    watch,
+    watchEffect,
+    external-state,
+    best-practice
+  ]
 ---
 
 # Reactivity Core Patterns (ref, reactive, shallowRef, computed, watch)
@@ -34,12 +46,14 @@ This reference covers the core reactivity decisions for local state, external da
 ### Always use `shallowRef()` instead of `ref()` for primitive values (string, number, boolean, null, etc.) for better performance.
 
 **Incorrect:**
+
 ```ts
 import { ref } from 'vue'
 const count = ref(0)
 ```
 
 **Correct:**
+
 ```ts
 import { shallowRef } from 'vue'
 const count = shallowRef(0)
@@ -127,7 +141,9 @@ import { reactive, watch } from 'vue'
 const state = reactive({ count: 0 })
 
 // ❌ watch expects a getter, ref, reactive object, or array of these
-watch(state.count, () => { /* ... */ })
+watch(state.count, () => {
+  /* ... */
+})
 ```
 
 **GOOD:**
@@ -140,8 +156,15 @@ import { reactive, toRefs, watch } from 'vue'
 const state = reactive({ count: 0 })
 const { count } = toRefs(state) // ✅ count is a ref
 
-watch(count, () => { /* ... */ }) // ✅
-watch(() => state.count, () => { /* ... */ }) // ✅
+watch(count, () => {
+  /* ... */
+}) // ✅
+watch(
+  () => state.count,
+  () => {
+    /* ... */
+  }
+) // ✅
 ```
 
 ## Best practices for `computed`
@@ -149,6 +172,7 @@ watch(() => state.count, () => { /* ... */ }) // ✅
 ### Prefer `computed` over watcher-assigned derived refs
 
 **BAD:**
+
 ```ts
 import { ref, watchEffect } from 'vue'
 
@@ -161,6 +185,7 @@ watchEffect(() => {
 ```
 
 **GOOD:**
+
 ```ts
 import { ref, computed } from 'vue'
 
@@ -173,9 +198,10 @@ const total = computed(() =>
 ### Keep filtered/sorted derivations out of templates
 
 **BAD:**
+
 ```vue
 <template>
-  <li v-for="item in items.filter(item => item.active)" :key="item.id">
+  <li v-for="item in items.filter((item) => item.active)" :key="item.id">
     {{ item.name }}
   </li>
 
@@ -199,6 +225,7 @@ function getSortedItems() {
 ```
 
 **GOOD:**
+
 ```vue
 <script setup>
 import { ref, computed } from 'vue'
@@ -210,7 +237,7 @@ const items = ref([
 
 const visibleItems = computed(() =>
   items.value
-    .filter(item => item.active)
+    .filter((item) => item.active)
     .sort((a, b) => a.name.localeCompare(b.name))
 )
 </script>
@@ -225,15 +252,23 @@ const visibleItems = computed(() =>
 ### Use `computed` for reusable class/style logic
 
 **BAD:**
+
 ```vue
 <template>
-  <button :class="{ btn: true, 'btn-primary': type === 'primary' && !disabled, 'btn-disabled': disabled }">
+  <button
+    :class="{
+      btn: true,
+      'btn-primary': type === 'primary' && !disabled,
+      'btn-disabled': disabled
+    }"
+  >
     {{ label }}
   </button>
 </template>
 ```
 
 **GOOD:**
+
 ```vue
 <script setup>
 import { computed } from 'vue'
@@ -295,6 +330,7 @@ watch(count, (value) => {
 ### Use `immediate: true` instead of duplicate initial calls
 
 **BAD:**
+
 ```ts
 import { ref, watch, onMounted } from 'vue'
 
@@ -309,16 +345,13 @@ watch(userId, (id) => loadUser(id))
 ```
 
 **GOOD:**
+
 ```ts
 import { ref, watch } from 'vue'
 
 const userId = ref(1)
 
-watch(
-  userId,
-  (id) => loadUser(id),
-  { immediate: true }
-)
+watch(userId, (id) => loadUser(id), { immediate: true })
 ```
 
 ### Clean up async effects for watchers
@@ -336,7 +369,7 @@ watch(query, async (q, _prev, onCleanup) => {
   onCleanup(() => controller.abort())
 
   const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`, {
-    signal: controller.signal,
+    signal: controller.signal
   })
 
   results.value = await res.json()

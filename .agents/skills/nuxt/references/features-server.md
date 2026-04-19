@@ -106,7 +106,7 @@ export default defineEventHandler((event) => {
   setCookie(event, 'token', 'new-token', {
     httpOnly: true,
     secure: true,
-    maxAge: 60 * 60 * 24, // 1 day
+    maxAge: 60 * 60 * 24 // 1 day
   })
 
   return { authenticated: !!token }
@@ -156,7 +156,7 @@ export default defineEventHandler((event) => {
   if (!user) {
     throw createError({
       statusCode: 404,
-      statusMessage: 'User not found',
+      statusMessage: 'User not found'
     })
   }
 
@@ -213,10 +213,10 @@ export default defineEventHandler((event) => {
     async start(controller) {
       for (let i = 0; i < 10; i++) {
         controller.enqueue(`data: ${JSON.stringify({ count: i })}\n\n`)
-        await new Promise(r => setTimeout(r, 1000))
+        await new Promise((r) => setTimeout(r, 1000))
       }
       controller.close()
-    },
+    }
   })
 
   return stream
@@ -250,14 +250,14 @@ export default defineNuxtConfig({
     storage: {
       redis: {
         driver: 'redis',
-        url: 'redis://localhost:6379',
-      },
-    },
-  },
+        url: 'redis://localhost:6379'
+      }
+    }
+  }
 })
 ```
 
-<!-- 
+<!--
 Source references:
 - https://nuxt.com/docs/getting-started/server
 - https://nuxt.com/docs/directory-structure/server

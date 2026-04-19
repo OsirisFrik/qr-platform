@@ -31,7 +31,13 @@ my-nuxt-module/
 
 ```ts
 // src/module.ts
-import { defineNuxtModule, createResolver, addPlugin, addComponent, addImports } from '@nuxt/kit'
+import {
+  defineNuxtModule,
+  createResolver,
+  addPlugin,
+  addComponent,
+  addImports
+} from '@nuxt/kit'
 
 export interface ModuleOptions {
   prefix?: string
@@ -44,12 +50,12 @@ export default defineNuxtModule<ModuleOptions>({
     name: 'my-module',
     configKey: 'myModule',
     compatibility: {
-      nuxt: '>=3.0.0',
-    },
+      nuxt: '>=3.0.0'
+    }
   },
   defaults: {
     prefix: 'My',
-    enabled: true,
+    enabled: true
   },
   setup(options, nuxt) {
     if (!options.enabled) return
@@ -57,7 +63,7 @@ export default defineNuxtModule<ModuleOptions>({
     const { resolve } = createResolver(import.meta.url)
 
     // Module setup logic here
-  },
+  }
 })
 ```
 
@@ -77,16 +83,16 @@ interface ModuleOptions {
 export default defineNuxtModule<ModuleOptions>().with({
   meta: {
     name: '@nuxtjs/my-api',
-    configKey: 'myApi',
+    configKey: 'myApi'
   },
   defaults: {
     baseURL: 'https://api.example.com',
-    timeout: 5000,
+    timeout: 5000
   },
   setup(resolvedOptions, nuxt) {
     // resolvedOptions.baseURL is guaranteed to be string (not undefined)
     // resolvedOptions.timeout is guaranteed to be number (not undefined)
-  },
+  }
 })
 ```
 
@@ -104,16 +110,16 @@ export default defineNuxtModule({
     // Single component
     addComponent({
       name: 'MyButton',
-      filePath: resolve('./runtime/components/MyButton.vue'),
+      filePath: resolve('./runtime/components/MyButton.vue')
     })
 
     // Component directory with prefix
     addComponentsDir({
       path: resolve('./runtime/components'),
       prefix: 'My',
-      pathPrefix: false,
+      pathPrefix: false
     })
-  },
+  }
 })
 ```
 
@@ -129,12 +135,12 @@ export default defineNuxtModule({
     // Single import
     addImports({
       name: 'useMyUtil',
-      from: resolve('./runtime/composables/useMyUtil'),
+      from: resolve('./runtime/composables/useMyUtil')
     })
 
     // Directory of composables
     addImportsDir(resolve('./runtime/composables'))
-  },
+  }
 })
 ```
 
@@ -150,7 +156,7 @@ export default defineNuxtModule({
     // Static plugin file
     addPlugin({
       src: resolve('./runtime/plugins/myPlugin'),
-      mode: 'client', // 'client', 'server', or 'all'
+      mode: 'client' // 'client', 'server', or 'all'
     })
 
     // Dynamic plugin with generated code
@@ -165,9 +171,9 @@ export default defineNuxtPlugin({
     const config = ${JSON.stringify(options)}
     // Plugin logic
   }
-})`,
+})`
     })
-  },
+  }
 })
 ```
 
@@ -185,19 +191,23 @@ export default defineNuxtModule({
     // Single handler
     addServerHandler({
       route: '/api/my-endpoint',
-      handler: resolve('./runtime/server/api/my-endpoint'),
+      handler: resolve('./runtime/server/api/my-endpoint')
     })
 
     // Scan entire server directory (api/, routes/, middleware/, utils/)
     addServerScanDir(resolve('./runtime/server'))
-  },
+  }
 })
 ```
 
 ### Server Composables
 
 ```ts
-import { addServerImports, addServerImportsDir, createResolver } from '@nuxt/kit'
+import {
+  addServerImports,
+  addServerImportsDir,
+  createResolver
+} from '@nuxt/kit'
 
 export default defineNuxtModule({
   setup() {
@@ -206,12 +216,12 @@ export default defineNuxtModule({
     // Single server import
     addServerImports({
       name: 'useServerUtil',
-      from: resolve('./runtime/server/utils/useServerUtil'),
+      from: resolve('./runtime/server/utils/useServerUtil')
     })
 
     // Server composables directory
     addServerImportsDir(resolve('./runtime/server/composables'))
-  },
+  }
 })
 ```
 
@@ -224,7 +234,7 @@ export default defineNuxtModule({
   setup() {
     const { resolve } = createResolver(import.meta.url)
     addServerPlugin(resolve('./runtime/server/plugin'))
-  },
+  }
 })
 ```
 
@@ -244,7 +254,12 @@ export default defineNitroPlugin((nitroApp) => {
 ### Generate Virtual Files
 
 ```ts
-import { addTemplate, addTypeTemplate, addServerTemplate, createResolver } from '@nuxt/kit'
+import {
+  addTemplate,
+  addTypeTemplate,
+  addServerTemplate,
+  createResolver
+} from '@nuxt/kit'
 
 export default defineNuxtModule({
   setup(options, nuxt) {
@@ -253,7 +268,7 @@ export default defineNuxtModule({
     // Client/build virtual file (accessible via #build/my-config.mjs)
     addTemplate({
       filename: 'my-config.mjs',
-      getContents: () => `export default ${JSON.stringify(options)}`,
+      getContents: () => `export default ${JSON.stringify(options)}`
     })
 
     // Type declarations
@@ -264,15 +279,15 @@ declare module '#my-module' {
   export interface Config {
     apiKey: string
   }
-}`,
+}`
     })
 
     // Nitro virtual file (accessible in server routes)
     addServerTemplate({
       filename: '#my-module/config.mjs',
-      getContents: () => `export const config = ${JSON.stringify(options)}`,
+      getContents: () => `export const config = ${JSON.stringify(options)}`
     })
-  },
+  }
 })
 ```
 
@@ -290,7 +305,12 @@ import { config } from '#my-module/config.js'
 ## Extending Pages and Routes
 
 ```ts
-import { extendPages, extendRouteRules, addRouteMiddleware, createResolver } from '@nuxt/kit'
+import {
+  extendPages,
+  extendRouteRules,
+  addRouteMiddleware,
+  createResolver
+} from '@nuxt/kit'
 
 export default defineNuxtModule({
   setup() {
@@ -301,22 +321,22 @@ export default defineNuxtModule({
       pages.push({
         name: 'my-page',
         path: '/my-route',
-        file: resolve('./runtime/pages/MyPage.vue'),
+        file: resolve('./runtime/pages/MyPage.vue')
       })
     })
 
     // Add route rules (caching, redirects, etc.)
     extendRouteRules('/api/**', {
-      cache: { maxAge: 60 },
+      cache: { maxAge: 60 }
     })
 
     // Add middleware
     addRouteMiddleware({
       name: 'my-middleware',
       path: resolve('./runtime/middleware/myMiddleware'),
-      global: true,
+      global: true
     })
-  },
+  }
 })
 ```
 
@@ -327,30 +347,30 @@ Declare dependencies on other modules with version constraints:
 ```ts
 export default defineNuxtModule({
   meta: {
-    name: 'my-module',
+    name: 'my-module'
   },
   moduleDependencies: {
     '@nuxtjs/tailwindcss': {
       version: '>=6.0.0',
       // Set defaults (user can override)
       defaults: {
-        exposeConfig: true,
+        exposeConfig: true
       },
       // Force specific options
       overrides: {
-        viewer: false,
-      },
+        viewer: false
+      }
     },
     '@nuxtjs/i18n': {
       optional: true, // Won't fail if not installed
       defaults: {
-        defaultLocale: 'en',
-      },
-    },
+        defaultLocale: 'en'
+      }
+    }
   },
   setup() {
     // Dependencies are guaranteed to be set up before this runs
-  },
+  }
 })
 ```
 
@@ -378,7 +398,7 @@ Requires `meta.name` and `meta.version`:
 export default defineNuxtModule({
   meta: {
     name: 'my-module',
-    version: '1.2.0',
+    version: '1.2.0'
   },
   onInstall(nuxt) {
     // First-time setup
@@ -390,7 +410,7 @@ export default defineNuxtModule({
   },
   setup(options, nuxt) {
     // Regular setup runs every build
-  },
+  }
 })
 ```
 
@@ -404,7 +424,7 @@ export default defineNuxtModule({
 
     // Add runtime config
     nuxt.options.runtimeConfig.public.myModule = {
-      apiUrl: options.apiUrl,
+      apiUrl: options.apiUrl
     }
 
     // Extend Vite config
@@ -414,7 +434,7 @@ export default defineNuxtModule({
 
     // Add build transpile
     nuxt.options.build.transpile.push('my-package')
-  },
+  }
 })
 ```
 
@@ -426,7 +446,7 @@ export default defineNuxtModule({
   hooks: {
     'components:dirs': (dirs) => {
       dirs.push({ path: '~/extra' })
-    },
+    }
   },
 
   setup(options, nuxt) {
@@ -446,7 +466,7 @@ export default defineNuxtModule({
     nuxt.hook('vite:extendConfig', (config) => {
       // Modify Vite config
     })
-  },
+  }
 })
 ```
 
@@ -468,9 +488,9 @@ export default defineNuxtModule({
     // Find first existing file
     const configPath = await findPath([
       resolve('./config.ts'),
-      resolve('./config.js'),
+      resolve('./config.js')
     ])
-  },
+  }
 })
 ```
 
@@ -518,8 +538,8 @@ export default defineNuxtConfig({
 
   // Or with options
   myModule: {
-    enabled: false,
-  },
+    enabled: false
+  }
 })
 ```
 

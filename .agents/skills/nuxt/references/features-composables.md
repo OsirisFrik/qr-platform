@@ -89,7 +89,7 @@ export function useAuth() {
   async function login(credentials: Credentials) {
     user.value = await $fetch('/api/auth/login', {
       method: 'POST',
-      body: credentials,
+      body: credentials
     })
   }
 
@@ -140,9 +140,9 @@ export default defineNuxtConfig({
   imports: {
     dirs: [
       'composables',
-      'composables/**', // Scan all nested
-    ],
-  },
+      'composables/**' // Scan all nested
+    ]
+  }
 })
 ```
 
@@ -157,7 +157,7 @@ export function formatDate(date: Date) {
 export function formatCurrency(amount: number) {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'USD'
   }).format(amount)
 }
 ```
@@ -201,18 +201,18 @@ export default defineNuxtConfig({
     presets: [
       {
         from: 'vue-i18n',
-        imports: ['useI18n'],
+        imports: ['useI18n']
       },
       {
         from: 'date-fns',
-        imports: ['format', 'parseISO', 'differenceInDays'],
+        imports: ['format', 'parseISO', 'differenceInDays']
       },
       {
         from: '@vueuse/core',
-        imports: ['useMouse', 'useWindowSize'],
-      },
-    ],
-  },
+        imports: ['useMouse', 'useWindowSize']
+      }
+    ]
+  }
 })
 ```
 
@@ -246,6 +246,7 @@ export function useMyComposable() {
 ```
 
 **Valid contexts:**
+
 - `<script setup>` block
 - `setup()` function
 - `defineNuxtPlugin()` callback
@@ -258,17 +259,17 @@ export function useMyComposable() {
 export default defineNuxtConfig({
   // Disable all auto-imports
   imports: {
-    autoImport: false,
+    autoImport: false
   },
 
   // Or disable only directory scanning (keep Vue/Nuxt imports)
   imports: {
-    scan: false,
-  },
+    scan: false
+  }
 })
 ```
 
-<!-- 
+<!--
 Source references:
 - https://nuxt.com/docs/guide/concepts/auto-imports
 - https://nuxt.com/docs/directory-structure/app/composables

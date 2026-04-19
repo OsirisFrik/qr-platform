@@ -3,7 +3,15 @@ title: Avoid Hidden Side Effects in Composables
 impact: HIGH
 impactDescription: Side effects hidden in composables make debugging difficult and create implicit coupling between components
 type: best-practice
-tags: [vue3, composables, composition-api, side-effects, provide-inject, global-state]
+tags:
+  [
+    vue3,
+    composables,
+    composition-api,
+    side-effects,
+    provide-inject,
+    global-state
+  ]
 ---
 
 # Avoid Hidden Side Effects in Composables
@@ -21,11 +29,12 @@ When a composable has unexpected side effects, consumers can't reason about what
 - [ ] Keep composables focused on returning reactive state and methods
 
 **Incorrect:**
+
 ```javascript
 // WRONG: Hidden provide/inject dependency
 export function useTheme() {
   // Consumer has no idea this depends on a provided theme
-  const theme = inject('theme')  // What if nothing provides this?
+  const theme = inject('theme') // What if nothing provides this?
 
   const isDark = computed(() => theme?.mode === 'dark')
   return { isDark }
@@ -66,6 +75,7 @@ export function useFormContext() {
 ```
 
 **Correct:**
+
 ```javascript
 // CORRECT: Explicit dependency injection
 export function useTheme(injectedTheme) {
@@ -204,5 +214,6 @@ const { data, fetch } = useDataFetcher(apiClient, cache)
 ```
 
 ## Reference
+
 - [Vue.js Composables](https://vuejs.org/guide/reusability/composables.html)
 - [Common Mistakes Creating Composition Functions](https://www.telerik.com/blogs/common-mistakes-creating-composition-functions-vue)

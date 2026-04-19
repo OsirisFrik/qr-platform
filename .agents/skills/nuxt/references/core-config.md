@@ -16,7 +16,7 @@ The main configuration file at the root of your project:
 export default defineNuxtConfig({
   // Configuration options
   devtools: { enabled: true },
-  modules: ['@nuxt/ui'],
+  modules: ['@nuxt/ui']
 })
 ```
 
@@ -28,8 +28,8 @@ Configure environment-specific settings:
 export default defineNuxtConfig({
   $production: {
     routeRules: {
-      '/**': { isr: true },
-    },
+      '/**': { isr: true }
+    }
   },
   $development: {
     // Development-specific config
@@ -37,8 +37,8 @@ export default defineNuxtConfig({
   $env: {
     staging: {
       // Staging environment config
-    },
-  },
+    }
+  }
 })
 ```
 
@@ -56,9 +56,9 @@ export default defineNuxtConfig({
     apiSecret: '123',
     // Keys within public are exposed to client
     public: {
-      apiBase: '/api',
-    },
-  },
+      apiBase: '/api'
+    }
+  }
 })
 ```
 
@@ -91,9 +91,9 @@ export default defineAppConfig({
   theme: {
     dark: true,
     colors: {
-      primary: '#ff0000',
-    },
-  },
+      primary: '#ff0000'
+    }
+  }
 })
 ```
 
@@ -107,13 +107,13 @@ const appConfig = useAppConfig()
 
 ## runtimeConfig vs app.config
 
-| Feature | runtimeConfig | app.config |
-|---------|--------------|------------|
-| Client-side | Hydrated | Bundled |
-| Environment variables | Yes | No |
-| Reactive | Yes | Yes |
-| Hot module replacement | No | Yes |
-| Non-primitive JS types | No | Yes |
+| Feature                | runtimeConfig | app.config |
+| ---------------------- | ------------- | ---------- |
+| Client-side            | Hydrated      | Bundled    |
+| Environment variables  | Yes           | No         |
+| Reactive               | Yes           | Yes        |
+| Hot module replacement | No            | Yes        |
+| Non-primitive JS types | No            | Yes        |
 
 **Use runtimeConfig** for secrets and values that change per environment.
 **Use app.config** for public tokens, theme settings, and non-sensitive config.
@@ -133,12 +133,12 @@ export default defineNuxtConfig({
     // vite options
     vue: {
       // @vitejs/plugin-vue options
-    },
+    }
   },
   // PostCSS configuration
   postcss: {
     // postcss options
-  },
+  }
 })
 ```
 
@@ -149,12 +149,12 @@ Enable Vue experimental features:
 ```ts
 export default defineNuxtConfig({
   vue: {
-    propsDestructure: true,
-  },
+    propsDestructure: true
+  }
 })
 ```
 
-<!-- 
+<!--
 Source references:
 - https://nuxt.com/docs/getting-started/configuration
 - https://nuxt.com/docs/guide/going-further/runtime-config

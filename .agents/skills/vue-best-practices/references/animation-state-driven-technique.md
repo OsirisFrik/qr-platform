@@ -39,7 +39,7 @@ const hue = ref(0)
 function onMousemove(e) {
   // Map mouse X position to hue (0-360)
   const rect = e.currentTarget.getBoundingClientRect()
-  hue.value = Math.round((e.clientX - rect.left) / rect.width * 360)
+  hue.value = Math.round(((e.clientX - rect.left) / rect.width) * 360)
 }
 </script>
 
@@ -61,10 +61,7 @@ function onMousemove(e) {
 
 ```vue
 <template>
-  <div
-    class="container"
-    @mousemove="onMousemove"
-  >
+  <div class="container" @mousemove="onMousemove">
     <div
       class="follower"
       :style="{
@@ -112,17 +109,9 @@ function onMousemove(e) {
 ```vue
 <template>
   <div class="progress-container">
-    <div
-      class="progress-bar"
-      :style="{ width: `${progress}%` }"
-    />
+    <div class="progress-bar" :style="{ width: `${progress}%` }" />
   </div>
-  <input
-    type="range"
-    v-model.number="progress"
-    min="0"
-    max="100"
-  />
+  <input type="range" v-model.number="progress" min="0" max="100" />
 </template>
 
 <script setup>
@@ -141,7 +130,7 @@ const progress = ref(0)
 
 .progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, #4CAF50, #8BC34A);
+  background: linear-gradient(90deg, #4caf50, #8bc34a);
   transition: width 0.3s ease;
 }
 </style>
@@ -172,7 +161,7 @@ const heroOpacity = computed(() => {
 })
 
 const scrollOffset = computed(() => {
-  return scrollY.value * 0.5  // Parallax effect
+  return scrollY.value * 0.5 // Parallax effect
 })
 
 function handleScroll() {
@@ -203,10 +192,7 @@ onUnmounted(() => {
 
 ```vue
 <template>
-  <div
-    class="app"
-    :style="themeStyles"
-  >
+  <div class="app" :style="themeStyles">
     <button @click="toggleTheme">Toggle Theme</button>
     <p>Current theme: {{ isDark ? 'Dark' : 'Light' }}</p>
   </div>
@@ -232,7 +218,9 @@ function toggleTheme() {
 <style>
 .app {
   min-height: 100vh;
-  transition: background-color 0.5s ease, color 0.5s ease;
+  transition:
+    background-color 0.5s ease,
+    color 0.5s ease;
 }
 </style>
 ```
@@ -275,12 +263,17 @@ watch(targetNumber, (newValue) => {
 <style>
 /* GOOD: GPU-accelerated properties */
 .element {
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
 }
 
 /* AVOID: Properties that trigger layout recalculation */
 .element {
-  transition: width 0.3s ease, height 0.3s ease, margin 0.3s ease;
+  transition:
+    width 0.3s ease,
+    height 0.3s ease,
+    margin 0.3s ease;
 }
 
 /* For high-frequency updates, consider will-change */
