@@ -23,6 +23,5 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-# agents
-.agents/
-.cloud/
+# claude
+.claude/
