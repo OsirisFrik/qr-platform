@@ -21,6 +21,7 @@ export default defineConfig({
     optimizeDeps: {
       include: [
         '@vueuse/core',
+        'jsbarcode',
         'lucide-vue-next',
         'qrcode',
         'reka-ui',

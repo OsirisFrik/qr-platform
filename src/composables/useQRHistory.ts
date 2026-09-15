@@ -1,11 +1,14 @@
 import { useLocalStorage } from '@vueuse/core'
 import type { QROptions } from '~/composables/useQRCode'
 
+export type QRHistoryType = 'text' | 'wifi' | 'whatsapp' | 'barcode'
+
 export interface QRHistoryItem {
   id: string
   text: string
   qrDataUrl: string
-  options: QROptions
+  options: QROptions | null
+  type?: QRHistoryType
   createdAt: number
 }
 
@@ -15,24 +18,28 @@ export const useQRHistory = () => {
   const history = useLocalStorage<QRHistoryItem[]>('qr-history', [])
 
   const addToHistory = (
+    type: QRHistoryType,
     text: string,
     qrDataUrl: string,
-    options: QROptions
+    options: QROptions | null
   ) => {
     if (!text.trim() || !qrDataUrl) return
 
     const serializedOptions = JSON.stringify(options)
     const isDuplicate = history.value.some(
       (item) =>
-        item.text === text && JSON.stringify(item.options) === serializedOptions
+        (item.type ?? 'text') === type &&
+        item.text === text &&
+        JSON.stringify(item.options) === serializedOptions
     )
     if (isDuplicate) return
 
     const newItem: QRHistoryItem = {
       id: crypto.randomUUID(),
+      type,
       text,
       qrDataUrl,
-      options: { ...options },
+      options: options ? { ...options } : null,
       createdAt: Date.now()
     }
 

@@ -10,7 +10,9 @@
     "generating": "Generando código QR...",
     "download": "Descargar",
     "copy": "Copiar al Portapapeles",
-    "copied": "¡Copiado!"
+    "copied": "¡Copiado!",
+    "altQr": "Código QR",
+    "altBarcode": "Código de barras"
   },
   "options": {
     "title": "Opciones de Personalización",
@@ -32,7 +34,8 @@
   "mode": {
     "text": "Texto / URL",
     "wifi": "WiFi",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "barcode": "Código de barras"
   },
   "whatsapp": {
     "phone": "Número de teléfono",
@@ -54,6 +57,11 @@
     "hidePassword": "Ocultar contraseña",
     "hidden": "Red oculta",
     "hiddenHint": "Activa si la red no transmite su SSID"
+  },
+  "barcode": {
+    "label": "Contenido del código de barras",
+    "placeholder": "ej. ABC123",
+    "hint": "Solo letras y números (A-Z, 0-9), hasta 20 caracteres."
   },
   "reset": "Reiniciar",
   "history": {

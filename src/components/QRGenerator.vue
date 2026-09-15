@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { track } from '@vercel/analytics'
-import { Link, MessageCircle, RotateCcw, Type, Wifi } from 'lucide-vue-next'
+import { Barcode, Link, MessageCircle, RotateCcw, Type, Wifi } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 import { useQRCode } from '../composables/useQRCode'
+import { useBarcode } from '../composables/useBarcode'
 import { useQRHistory, type QRHistoryItem } from '../composables/useQRHistory'
 import { useI18n } from '../i18n'
 
@@ -11,28 +12,46 @@ const {
   text,
   options,
   qrDataUrl,
-  isGenerating,
+  isGenerating: isGeneratingQR,
   downloadQR,
   copyToClipboard,
   reset
 } = useQRCode()
 
+const {
+  text: barcodeText,
+  barcodeDataUrl,
+  isGenerating: isGeneratingBarcode,
+  downloadBarcode,
+  copyToClipboard: copyBarcodeToClipboard,
+  reset: resetBarcode
+} = useBarcode()
+
 const { addToHistory } = useQRHistory()
 const { t } = useI18n()
 
 const showOptions = ref(false)
-const mode = ref<'text' | 'wifi' | 'whatsapp'>('text')
+const mode = ref<'text' | 'wifi' | 'whatsapp' | 'barcode'>('text')
 const wifiText = ref('')
 const whatsappText = ref('')
+
+const activeDataUrl = computed(() =>
+  mode.value === 'barcode' ? barcodeDataUrl.value : qrDataUrl.value
+)
+const activeIsGenerating = computed(() =>
+  mode.value === 'barcode' ? isGeneratingBarcode.value : isGeneratingQR.value
+)
 
 const activeText = computed(() => {
   if (mode.value === 'wifi') return wifiText.value
   if (mode.value === 'whatsapp') return whatsappText.value
+  if (mode.value === 'barcode') return barcodeText.value
   return text.value
 })
 
 watch(mode, () => {
   reset()
+  resetBarcode()
   wifiText.value = ''
   whatsappText.value = ''
   showOptions.value = false
@@ -47,32 +66,56 @@ watch(whatsappText, (val) => {
 })
 
 const handleDownload = async () => {
+  if (mode.value === 'barcode') {
+    const filename = `barcode-${Date.now()}.png`
+    await downloadBarcode(filename)
+    if (barcodeDataUrl.value)
+      addToHistory('barcode', activeText.value, barcodeDataUrl.value, null)
+    return
+  }
   const filename = `qr-code-${Date.now()}.png`
   await downloadQR(filename)
   if (qrDataUrl.value)
-    addToHistory(activeText.value, qrDataUrl.value, options.value)
+    addToHistory(mode.value, activeText.value, qrDataUrl.value, options.value)
 }
 
 const handleCopy = async () => {
+  if (mode.value === 'barcode') {
+    await copyBarcodeToClipboard()
+    if (barcodeDataUrl.value)
+      addToHistory('barcode', activeText.value, barcodeDataUrl.value, null)
+    return
+  }
   await copyToClipboard()
   if (qrDataUrl.value)
-    addToHistory(activeText.value, qrDataUrl.value, options.value)
+    addToHistory(mode.value, activeText.value, qrDataUrl.value, options.value)
+}
+
+const inferLegacyType = (text: string): string => {
+  if (text.startsWith('WIFI:')) return 'wifi'
+  if (text.startsWith('https://wa.me/')) return 'whatsapp'
+  return 'text'
 }
 
 const handleRestore = (item: QRHistoryItem) => {
-  if (item.text.startsWith('WIFI:')) {
-    mode.value = 'wifi'
+  const type = item.type ?? inferLegacyType(item.text)
+  mode.value = type as 'text' | 'wifi' | 'whatsapp' | 'barcode'
+
+  if (type === 'wifi') {
     wifiText.value = item.text
     text.value = item.text
-  } else if (item.text.startsWith('https://wa.me/')) {
-    mode.value = 'whatsapp'
+  } else if (type === 'whatsapp') {
     whatsappText.value = item.text
     text.value = item.text
+  } else if (type === 'barcode') {
+    barcodeText.value = item.text
+      .replace(/[^A-Za-z0-9]/g, '')
+      .slice(0, 20)
   } else {
-    mode.value = 'text'
     text.value = item.text
   }
-  options.value = { ...item.options }
+
+  if (item.options) options.value = { ...item.options }
 }
 
 const hasContent = computed(() => !!activeText.value)
@@ -91,6 +134,7 @@ import FieldGroup from '@/components/ui/field/FieldGroup.vue'
 import QRInput from './QRInput.vue'
 import QRWifiInput from './QRWifiInput.vue'
 import QRWhatsAppInput from './QRWhatsAppInput.vue'
+import QRBarcodeInput from './QRBarcodeInput.vue'
 import QRPreview from './QRPreview.vue'
 import QROptions from './QROptions.vue'
 import QRHistory from './QRHistory.vue'
@@ -153,6 +197,20 @@ import QRHistory from './QRHistory.vue'
           <MessageCircle class="h-4 w-4" />
           {{ t('mode.whatsapp') }}
         </Button>
+        <ButtonGroupSeparator />
+        <Button
+          :variant="mode === 'barcode' ? 'default' : 'outline'"
+          class="flex-1"
+          @click="
+            () => {
+              mode = 'barcode'
+              track('qr:mode:barcode')
+            }
+          "
+        >
+          <Barcode class="h-4 w-4" />
+          {{ t('mode.barcode') }}
+        </Button>
       </ButtonGroup>
 
       <!-- Input by mode -->
@@ -167,12 +225,14 @@ import QRHistory from './QRHistory.vue'
       >
         <QRInput v-if="mode === 'text'" v-model="text" />
         <QRWifiInput v-else-if="mode === 'wifi'" v-model="wifiText" />
-        <QRWhatsAppInput v-else v-model="whatsappText" />
+        <QRWhatsAppInput v-else-if="mode === 'whatsapp'" v-model="whatsappText" />
+        <QRBarcodeInput v-else v-model="barcodeText" />
       </Transition>
 
       <QRPreview
-        :data-url="qrDataUrl"
-        :is-generating="isGenerating"
+        :data-url="activeDataUrl"
+        :is-generating="activeIsGenerating"
+        :alt-text="mode === 'barcode' ? t('preview.altBarcode') : t('preview.altQr')"
         @download="handleDownload"
         @copy="handleCopy"
       />
@@ -223,7 +283,9 @@ import QRHistory from './QRHistory.vue'
         @click="
           () => {
             reset()
+            resetBarcode()
             wifiText = ''
+            whatsappText = ''
             track('qr:reset')
           }
         "

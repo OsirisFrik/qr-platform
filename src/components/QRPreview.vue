@@ -15,6 +15,7 @@ withDefaults(
   defineProps<{
     dataUrl: string | null
     isGenerating?: boolean
+    altText: string
   }>(),
   {
     isGenerating: false
@@ -60,7 +61,7 @@ const handleCopy = () => {
         <div class="rounded-lg bg-white p-4 shadow-sm">
           <img
             :src="dataUrl!"
-            alt="QR Code"
+            :alt="altText"
             class="h-auto max-h-80 w-auto max-w-80"
           />
         </div>
