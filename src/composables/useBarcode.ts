@@ -2,7 +2,18 @@ import { watchDebounced } from '@vueuse/core'
 import JsBarcode from 'jsbarcode'
 import { ref } from 'vue'
 
-const renderBarcodeToCanvas = (text: string): Promise<string> =>
+export interface BarcodeOptions {
+  fontSize: number
+}
+
+const defaultBarcodeOptions: BarcodeOptions = {
+  fontSize: 16
+}
+
+const renderBarcodeToCanvas = (
+  text: string,
+  opts: BarcodeOptions
+): Promise<string> =>
   new Promise((resolve, reject) => {
     try {
       const canvas = document.createElement('canvas')
@@ -14,7 +25,7 @@ const renderBarcodeToCanvas = (text: string): Promise<string> =>
         displayValue: true,
         background: '#FFFFFF',
         lineColor: '#000000',
-        fontSize: 16
+        fontSize: opts.fontSize
       })
       resolve(canvas.toDataURL('image/png'))
     } catch (error) {
@@ -24,6 +35,7 @@ const renderBarcodeToCanvas = (text: string): Promise<string> =>
 
 export const useBarcode = () => {
   const text = ref('')
+  const options = ref<BarcodeOptions>({ ...defaultBarcodeOptions })
   const barcodeDataUrl = ref<string | null>(null)
   const isGenerating = ref(false)
 
@@ -34,7 +46,7 @@ export const useBarcode = () => {
     }
     try {
       isGenerating.value = true
-      barcodeDataUrl.value = await renderBarcodeToCanvas(content)
+      barcodeDataUrl.value = await renderBarcodeToCanvas(content, options.value)
     } catch (error) {
       console.error('Error generating barcode:', error)
       barcodeDataUrl.value = null
@@ -72,6 +84,7 @@ export const useBarcode = () => {
 
   const reset = () => {
     text.value = ''
+    options.value = { ...defaultBarcodeOptions }
     barcodeDataUrl.value = null
   }
 
@@ -79,8 +92,17 @@ export const useBarcode = () => {
     debounce: 300
   })
 
+  watchDebounced(
+    options,
+    () => {
+      if (text.value) generateBarcode(text.value)
+    },
+    { deep: true, debounce: 300 }
+  )
+
   return {
     text,
+    options,
     barcodeDataUrl,
     isGenerating,
     downloadBarcode,

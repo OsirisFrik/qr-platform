@@ -7,7 +7,7 @@ export interface QRHistoryItem {
   id: string
   text: string
   qrDataUrl: string
-  options: QROptions | null
+  options: Record<string, any> | null
   type?: QRHistoryType
   createdAt: number
 }
@@ -21,7 +21,7 @@ export const useQRHistory = () => {
     type: QRHistoryType,
     text: string,
     qrDataUrl: string,
-    options: QROptions | null
+    options: Record<string, any> | null
   ) => {
     if (!text.trim() || !qrDataUrl) return
 

@@ -63,6 +63,12 @@
     "placeholder": "e.g. ABC123",
     "hint": "Letters and numbers only (A-Z, 0-9), up to 20 characters."
   },
+  "barcodeOptions": {
+    "title": "Barcode Options",
+    "show": "Show Options",
+    "hide": "Hide Options",
+    "fontSize": "Font Size"
+  },
   "reset": "Reset",
   "history": {
     "title": "Recent QR Codes",

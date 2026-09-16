@@ -20,6 +20,7 @@ const {
 
 const {
   text: barcodeText,
+  options: barcodeOptions,
   barcodeDataUrl,
   isGenerating: isGeneratingBarcode,
   downloadBarcode,
@@ -31,6 +32,7 @@ const { addToHistory } = useQRHistory()
 const { t } = useI18n()
 
 const showOptions = ref(false)
+const showBarcodeOptions = ref(false)
 const mode = ref<'text' | 'wifi' | 'whatsapp' | 'barcode'>('text')
 const wifiText = ref('')
 const whatsappText = ref('')
@@ -55,6 +57,7 @@ watch(mode, () => {
   wifiText.value = ''
   whatsappText.value = ''
   showOptions.value = false
+  showBarcodeOptions.value = false
 })
 
 watch(wifiText, (val) => {
@@ -70,7 +73,12 @@ const handleDownload = async () => {
     const filename = `barcode-${Date.now()}.png`
     await downloadBarcode(filename)
     if (barcodeDataUrl.value)
-      addToHistory('barcode', activeText.value, barcodeDataUrl.value, null)
+      addToHistory(
+        'barcode',
+        activeText.value,
+        barcodeDataUrl.value,
+        barcodeOptions.value
+      )
     return
   }
   const filename = `qr-code-${Date.now()}.png`
@@ -83,7 +91,12 @@ const handleCopy = async () => {
   if (mode.value === 'barcode') {
     await copyBarcodeToClipboard()
     if (barcodeDataUrl.value)
-      addToHistory('barcode', activeText.value, barcodeDataUrl.value, null)
+      addToHistory(
+        'barcode',
+        activeText.value,
+        barcodeDataUrl.value,
+        barcodeOptions.value
+      )
     return
   }
   await copyToClipboard()
@@ -111,11 +124,18 @@ const handleRestore = (item: QRHistoryItem) => {
     barcodeText.value = item.text
       .replace(/[^A-Za-z0-9]/g, '')
       .slice(0, 20)
+    if (item.options && 'fontSize' in item.options) {
+      barcodeOptions.value = {
+        fontSize: item.options.fontSize ?? 16
+      }
+    }
   } else {
     text.value = item.text
   }
 
-  if (item.options) options.value = { ...item.options }
+  if (item.options && 'errorCorrection' in item.options) {
+    options.value = { ...item.options } as typeof options.value
+  }
 }
 
 const hasContent = computed(() => !!activeText.value)
@@ -137,6 +157,7 @@ import QRWhatsAppInput from './QRWhatsAppInput.vue'
 import QRBarcodeInput from './QRBarcodeInput.vue'
 import QRPreview from './QRPreview.vue'
 import QROptions from './QROptions.vue'
+import BarcodeOptions from './BarcodeOptions.vue'
 import QRHistory from './QRHistory.vue'
 </script>
 
@@ -263,7 +284,22 @@ import QRHistory from './QRHistory.vue'
         {{ showOptions ? t('options.hide') : t('options.show') }}
       </Button>
 
-      <!-- Options Section -->
+      <!-- Barcode Options Toggle (only for barcode mode) -->
+      <Button
+        v-if="mode === 'barcode'"
+        variant="outline"
+        class="w-full"
+        @click="
+          () => {
+            showBarcodeOptions = !showBarcodeOptions
+            track('barcode:options:toggle')
+          }
+        "
+      >
+        {{ showBarcodeOptions ? t('barcodeOptions.hide') : t('barcodeOptions.show') }}
+      </Button>
+
+      <!-- QR Options Section -->
       <Transition
         enter-active-class="transition duration-200"
         enter-from-class="opacity-0 -translate-y-2"
@@ -273,6 +309,18 @@ import QRHistory from './QRHistory.vue'
         leave-to-class="opacity-0 -translate-y-2"
       >
         <QROptions v-if="showOptions" v-model="options" />
+      </Transition>
+
+      <!-- Barcode Options Section -->
+      <Transition
+        enter-active-class="transition duration-200"
+        enter-from-class="opacity-0 -translate-y-2"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition duration-200"
+        leave-from-class="opacity-100 translate-y-0"
+        leave-to-class="opacity-0 -translate-y-2"
+      >
+        <BarcodeOptions v-if="showBarcodeOptions" v-model="barcodeOptions" />
       </Transition>
 
       <!-- Reset Button -->
